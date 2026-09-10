@@ -236,7 +236,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({
                   title={`${token.label}: ${token.description}`}
                 >
                   <span>{token.raw}</span>
-                  <span className="block text-[9px] font-sans font-normal opacity-80 truncate max-w-[120px]">
+                  <span className="block text-[9px] font-normal opacity-80 truncate max-w-[120px]">
                     {token.label}
                   </span>
                 </button>
@@ -277,7 +277,7 @@ export const TranslateView: React.FC<TranslateViewProps> = ({
           </button>
         </div>
 
-        <p className="text-sm sm:text-base leading-relaxed font-sans">
+        <p className="text-sm sm:text-base leading-relaxed">
           {result.summary}
         </p>
       </div>

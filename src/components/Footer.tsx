@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({
           }`}
         >
           <Terminal className="w-4 h-4" />
-          <span>Intro</span>
+          <span>Philosophy</span>
         </button>
         <button
           id="mobile-nav-learn"

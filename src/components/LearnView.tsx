@@ -424,7 +424,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 }`}
               >
                 <span>Solution: <code className="font-bold text-rose-400">/{currentLesson.solution}/</code></span>
-                <span className="text-[11px] font-sans text-neutral-400">No shame in learning. Try modifying it!</span>
+                <span className="text-[11px] text-neutral-400">No shame in learning. Try modifying it!</span>
               </div>
             )}
           </div>

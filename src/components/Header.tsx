@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const navItems: { id: AppMode; label: string; badge?: string }[] = [
-    { id: 'intro', label: 'Intro & Lore' },
+    { id: 'intro', label: 'Philosophy' },
     { id: 'learn', label: 'Learn (12 Lessons)', badge: `${completedLessonIds.length}/${totalLessons}` },
     { id: 'translate', label: 'Translate' },
     { id: 'playground', label: 'Playground' }

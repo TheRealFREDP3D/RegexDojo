@@ -1,21 +1,58 @@
 @import "tailwindcss";
 
+@theme {
+  --font-mono: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --font-sans: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
+}
+
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-mono: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
+    --font-crt: 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
   }
 
+  *,
+  *::before,
+  *::after {
+    font-family: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
+  }
+
+  html,
   body {
-    font-family: var(--font-sans);
+    font-family: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
+    letter-spacing: 0.02em;
   }
 
-  code, pre, .font-mono {
-    font-family: var(--font-mono);
+  code,
+  pre,
+  kbd,
+  samp,
+  input,
+  textarea,
+  select,
+  button,
+  p,
+  span,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  td,
+  th {
+    font-family: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
   }
 }
 
-/* Custom scrollbars for dojo feel */
+.font-terminal,
+.font-crt {
+  font-family: 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
+  letter-spacing: 0.06em;
+}
+
+/* Custom scrollbars for retro terminal dojo feel */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -24,9 +61,9 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(150, 150, 150, 0.2);
-  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.3);
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(150, 150, 150, 0.4);
+  background: rgba(16, 185, 129, 0.5);
 }

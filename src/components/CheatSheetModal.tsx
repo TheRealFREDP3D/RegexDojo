@@ -84,29 +84,23 @@ export const CheatSheetModal: React.FC<{
   return (
     <div
       id="cheat-sheet-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
       onClick={onClose}
     >
       <div
         id="cheat-sheet-modal-card"
-        className={`relative w-full max-w-3xl max-h-[85vh] rounded-2xl flex flex-col border shadow-2xl overflow-hidden transition-colors ${
-          isDark
-            ? 'bg-neutral-900 border-neutral-800 text-neutral-100 shadow-emerald-950/20'
-            : 'bg-white border-neutral-200 text-neutral-900 shadow-neutral-300'
-        }`}
+        className="relative w-full max-w-3xl max-h-[85vh] rounded-2xl flex flex-col ember-glass-panel-crimson shadow-2xl overflow-hidden transition-colors text-neutral-100 shadow-rose-950/40"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`flex items-center justify-between px-6 py-4 border-b ${
-          isDark ? 'border-neutral-800 bg-neutral-900/90' : 'border-neutral-200 bg-neutral-50/90'
-        }`}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-rose-500/20 bg-black/40 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+            <div className="p-2 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 shadow-[0_0_10px_rgba(239,35,60,0.2)]">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight">Dojo Quick Reference</h2>
-              <p className={`text-xs ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+              <h2 className="text-lg font-bold tracking-tight heading-bar-h3 text-neutral-100">Dojo Quick Reference</h2>
+              <p className="text-xs text-neutral-400">
                 Emergency regex cheat sheet for the weary developer
               </p>
             </div>
@@ -114,9 +108,7 @@ export const CheatSheetModal: React.FC<{
           <button
             id="close-cheatsheet-btn"
             onClick={onClose}
-            className={`p-2 rounded-lg transition-colors ${
-              isDark ? 'hover:bg-neutral-800 text-neutral-400' : 'hover:bg-neutral-200 text-neutral-600'
-            }`}
+            className="p-2 rounded-lg transition-colors hover:bg-white/10 text-neutral-400 hover:text-white cursor-pointer"
             aria-label="Close cheat sheet"
           >
             <X className="w-5 h-5" />
@@ -124,20 +116,16 @@ export const CheatSheetModal: React.FC<{
         </div>
 
         {/* Filter & Search Bar */}
-        <div className={`p-4 border-b space-y-3 ${isDark ? 'border-neutral-800 bg-neutral-950/40' : 'border-neutral-100 bg-neutral-50'}`}>
+        <div className="p-4 border-b border-rose-500/15 bg-black/50 space-y-3">
           <div className="relative">
-            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDark ? 'text-neutral-500' : 'text-neutral-400'}`} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-400/70" />
             <input
               id="cheatsheet-search-input"
               type="text"
               placeholder="Search token, anchor, quantifier, or meaning..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className={`w-full pl-9 pr-4 py-2 rounded-xl text-sm border focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors ${
-                isDark
-                  ? 'bg-neutral-900 border-neutral-800 text-neutral-100 placeholder-neutral-500'
-                  : 'bg-white border-neutral-200 text-neutral-900 placeholder-neutral-400'
-              }`}
+              className="w-full pl-9 pr-4 py-2 rounded-xl text-sm border border-white/10 bg-black/60 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500/40 transition-colors shadow-inner"
             />
           </div>
 
@@ -147,12 +135,10 @@ export const CheatSheetModal: React.FC<{
                 key={cat}
                 id={`filter-cat-${cat}`}
                 onClick={() => setSelectedCat(cat)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   selectedCat === cat
-                    ? 'bg-emerald-500 text-neutral-950 font-semibold shadow-sm'
-                    : isDark
-                    ? 'bg-neutral-800/80 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
-                    : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
+                    ? 'btn-ember-primary shadow-sm'
+                    : 'bg-black/40 border border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/10'
                 }`}
               >
                 {cat}
@@ -165,7 +151,7 @@ export const CheatSheetModal: React.FC<{
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {filtered.length === 0 ? (
             <div className="text-center py-12">
-              <p className={`text-sm ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+              <p className="text-sm text-neutral-400">
                 No regex tokens match &quot;{search}&quot;. Even regex magic has its boundaries.
               </p>
             </div>
@@ -173,26 +159,20 @@ export const CheatSheetModal: React.FC<{
             filtered.map((item, idx) => (
               <div
                 key={idx}
-                className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                  isDark
-                    ? 'bg-neutral-900/60 border-neutral-800/80 hover:border-neutral-700'
-                    : 'bg-white border-neutral-200 hover:border-neutral-300 shadow-xs'
-                }`}
+                className="flex items-center justify-between p-3 rounded-xl ember-glass-card hover:border-rose-500/40 transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
+                  <span className="crimson-terminal-code font-mono text-sm px-2.5 py-1 rounded-md font-bold">
                     {item.token}
                   </span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">{item.name}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                        isDark ? 'bg-neutral-800 text-neutral-400' : 'bg-neutral-100 text-neutral-600'
-                      }`}>
+                      <span className="text-sm font-semibold text-neutral-100">{item.name}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded font-mono font-medium bg-rose-500/15 text-rose-300 border border-rose-500/20">
                         {item.category}
                       </span>
                     </div>
-                    <p className={`text-xs ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                    <p className="text-xs text-neutral-400">
                       {item.desc}
                     </p>
                   </div>
@@ -200,10 +180,8 @@ export const CheatSheetModal: React.FC<{
 
                 <div className="flex items-center gap-3">
                   <div className="hidden sm:flex items-center gap-1">
-                    <span className={`text-[11px] ${isDark ? 'text-neutral-500' : 'text-neutral-400'}`}>e.g.</span>
-                    <code className={`text-xs px-2 py-0.5 rounded font-mono ${
-                      isDark ? 'bg-neutral-800 text-neutral-300' : 'bg-neutral-100 text-neutral-700'
-                    }`}>
+                    <span className="text-[11px] text-neutral-500">e.g.</span>
+                    <code className="text-xs px-2 py-0.5 rounded font-mono bg-black/60 border border-white/10 text-amber-300">
                       {item.example}
                     </code>
                   </div>
@@ -211,12 +189,10 @@ export const CheatSheetModal: React.FC<{
                     id={`copy-token-${idx}`}
                     onClick={() => handleCopy(item.token)}
                     title="Copy token to clipboard"
-                    className={`p-1.5 rounded-lg border transition-colors ${
+                    className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
                       copiedToken === item.token
-                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
-                        : isDark
-                        ? 'border-neutral-800 hover:bg-neutral-800 text-neutral-400 hover:text-neutral-200'
-                        : 'border-neutral-200 hover:bg-neutral-100 text-neutral-600'
+                        ? 'bg-rose-500/20 border-rose-500/50 text-rose-300 shadow-[0_0_10px_rgba(239,35,60,0.3)]'
+                        : 'border-white/10 hover:bg-white/10 text-neutral-400 hover:text-neutral-200'
                     }`}
                   >
                     {copiedToken === item.token ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -228,11 +204,9 @@ export const CheatSheetModal: React.FC<{
         </div>
 
         {/* Footer info */}
-        <div className={`px-6 py-3 border-t text-xs flex items-center justify-between ${
-          isDark ? 'border-neutral-800 bg-neutral-950/60 text-neutral-400' : 'border-neutral-200 bg-neutral-50 text-neutral-500'
-        }`}>
+        <div className="px-6 py-3 border-t border-rose-500/20 bg-black/60 text-xs flex items-center justify-between text-neutral-400">
           <span>Click copy button to grab token syntax instantly</span>
-          <span>{filtered.length} patterns indexed</span>
+          <span className="text-rose-400 font-mono font-semibold">{filtered.length} patterns indexed</span>
         </div>
       </div>
     </div>

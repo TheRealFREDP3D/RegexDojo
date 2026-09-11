@@ -15,21 +15,21 @@ interface HeaderProps {
 
 export const getBeltInfo = (completedCount: number, total: number) => {
   if (completedCount >= total && total > 0) {
-    return { name: 'Black Belt Sensei', color: 'bg-neutral-900 text-emerald-400 border-emerald-500/50', dotColor: 'bg-emerald-400' };
+    return { name: 'Ember Sensei', color: 'bg-black/80 text-rose-300 border-rose-500/70 shadow-[0_0_15px_rgba(239,35,60,0.35)]', dotColor: 'bg-rose-500' };
   }
   if (completedCount >= 11) {
-    return { name: 'Brown Belt', color: 'bg-amber-900/40 text-amber-300 border-amber-700/50', dotColor: 'bg-amber-600' };
+    return { name: 'Ruby Belt', color: 'bg-rose-950/60 text-rose-300 border-rose-600/50', dotColor: 'bg-rose-500' };
   }
   if (completedCount >= 9) {
-    return { name: 'Blue Belt', color: 'bg-blue-900/40 text-blue-300 border-blue-600/50', dotColor: 'bg-blue-500' };
+    return { name: 'Amethyst Belt', color: 'bg-purple-950/60 text-purple-300 border-purple-600/50', dotColor: 'bg-purple-400' };
   }
   if (completedCount >= 6) {
-    return { name: 'Green Belt', color: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/50', dotColor: 'bg-emerald-500' };
+    return { name: 'Topaz Belt', color: 'bg-amber-950/60 text-amber-300 border-amber-600/50', dotColor: 'bg-amber-500' };
   }
   if (completedCount >= 3) {
-    return { name: 'Yellow Belt', color: 'bg-yellow-900/40 text-yellow-300 border-yellow-600/50', dotColor: 'bg-yellow-400' };
+    return { name: 'Flame Belt', color: 'bg-orange-950/60 text-orange-300 border-orange-600/50', dotColor: 'bg-orange-400' };
   }
-  return { name: 'White Belt', color: 'bg-neutral-800 text-neutral-300 border-neutral-700', dotColor: 'bg-neutral-300' };
+  return { name: 'White Belt', color: 'bg-neutral-900/60 text-neutral-300 border-neutral-700/60', dotColor: 'bg-neutral-400' };
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -59,11 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header
       id="main-app-header"
-      className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors ${
-        isDark
-          ? 'bg-neutral-950/90 border-neutral-800/80 text-neutral-100'
-          : 'bg-white/90 border-neutral-200 text-neutral-900'
-      }`}
+      className="sticky top-0 z-40 w-full ember-glass-panel border-b border-rose-500/20 text-neutral-100 transition-colors"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Brand */}
@@ -73,25 +69,25 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectMode('intro')}
             className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-neutral-950 shadow-md shadow-emerald-950/20 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-rose-950/60 border border-rose-400/40 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(239,35,60,0.5)] transition-all">
               <Terminal className="w-5 h-5 font-bold" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base tracking-tight font-mono">Regex<span className="text-emerald-500">Dojo</span></span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-mono font-semibold border border-emerald-500/30">
-                  v1.0
+                <span className="font-bold text-base tracking-tight font-mono">Regex<span className="text-rose-500 text-glow-crimson">Dojo</span></span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-semibold border border-rose-500/40">
+                  EMBER-GLAZZ
                 </span>
               </div>
-              <p className={`text-[10px] tracking-tight leading-none hidden sm:block ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                Taming black magic since 1951
+              <p className="text-[10px] tracking-tight leading-none hidden sm:block text-neutral-400">
+                Frosted glass &bull; Crimson terminal
               </p>
             </div>
           </button>
         </div>
 
         {/* Desktop Navigation Links */}
-        <nav id="desktop-nav-links" className="hidden md:flex items-center gap-1 bg-neutral-900/40 p-1 rounded-xl border border-neutral-800/50">
+        <nav id="desktop-nav-links" className="hidden md:flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10 backdrop-blur-md">
           {navItems.map((item) => {
             const isActive = currentMode === item.id;
             return (
@@ -101,10 +97,8 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => onSelectMode(item.id)}
                 className={`relative px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 ${
                   isActive
-                    ? 'bg-emerald-500 text-neutral-950 font-semibold shadow-xs'
-                    : isDark
-                    ? 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
-                    : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
+                    ? 'btn-ember-primary font-bold shadow-md'
+                    : 'text-neutral-300 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <span>{item.label}</span>
@@ -112,10 +106,8 @@ export const Header: React.FC<HeaderProps> = ({
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
                       isActive
-                        ? 'bg-neutral-950/20 text-neutral-950'
-                        : isDark
-                        ? 'bg-neutral-800 text-emerald-400'
-                        : 'bg-neutral-200 text-emerald-700'
+                        ? 'bg-black/30 text-white'
+                        : 'bg-rose-950/60 text-rose-300 border border-rose-500/30'
                     }`}
                   >
                     {item.badge}
@@ -132,14 +124,14 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="belt-rank-badge"
             onClick={() => onSelectMode('learn')}
-            title="Your current rank in RegexDojo. Complete all 12 lessons to earn the Black Belt!"
-            className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border transition-all hover:opacity-90 ${belt.color}`}
+            title="Your current rank in RegexDojo. Complete all 12 lessons to earn the Ember Sensei rank!"
+            className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-md transition-all hover:opacity-95 ${belt.color}`}
           >
             <span className={`w-2 h-2 rounded-full animate-pulse ${belt.dotColor}`} />
             <span className="hidden sm:inline font-semibold">{belt.name}</span>
             <span className="sm:hidden font-mono font-bold">{completedLessonIds.length}/12</span>
             {completedLessonIds.length === totalLessons && (
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
             )}
           </button>
 
@@ -148,13 +140,9 @@ export const Header: React.FC<HeaderProps> = ({
             id="open-cheatsheet-header-btn"
             onClick={onOpenCheatSheet}
             title="Open Quick Reference Cheat Sheet"
-            className={`p-2 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors ${
-              isDark
-                ? 'border-neutral-800 bg-neutral-900/60 hover:bg-neutral-800 text-neutral-300'
-                : 'border-neutral-200 bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-            }`}
+            className="p-2 rounded-lg border border-white/10 bg-black/40 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 backdrop-blur-md transition-all"
           >
-            <BookOpen className="w-4 h-4 text-emerald-500" />
+            <BookOpen className="w-4 h-4 text-rose-400" />
             <span className="hidden lg:inline">Cheat Sheet</span>
           </button>
 
@@ -163,12 +151,10 @@ export const Header: React.FC<HeaderProps> = ({
             id="toggle-sound-btn"
             onClick={handleToggleSound}
             title={soundEnabled ? 'Sound Effects Active' : 'Sound Effects Muted'}
-            className={`p-2 rounded-lg border transition-colors ${
+            className={`p-2 rounded-lg border backdrop-blur-md transition-colors ${
               soundEnabled
-                ? 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10'
-                : isDark
-                ? 'border-neutral-800 text-neutral-500 hover:text-neutral-300'
-                : 'border-neutral-200 text-neutral-400 hover:text-neutral-600'
+                ? 'border-rose-500/40 text-rose-400 bg-rose-500/15 shadow-[0_0_10px_rgba(239,35,60,0.2)]'
+                : 'border-white/10 text-neutral-400 hover:text-neutral-200 bg-black/40'
             }`}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -178,14 +164,10 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="toggle-theme-btn"
             onClick={onToggleTheme}
-            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className={`p-2 rounded-lg border transition-colors ${
-              isDark
-                ? 'border-neutral-800 text-neutral-300 hover:bg-neutral-800'
-                : 'border-neutral-200 text-neutral-700 hover:bg-neutral-100'
-            }`}
+            title={isDark ? 'Dark frosted glass active' : 'Light glass mode'}
+            className="p-2 rounded-lg border border-white/10 bg-black/40 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors backdrop-blur-md"
           >
-            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-600" />}
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-300" />}
           </button>
         </div>
       </div>

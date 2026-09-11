@@ -100,10 +100,10 @@ export default function App() {
     const body = document.body;
     if (isDark) {
       root.classList.add('dark');
-      body.className = 'bg-neutral-950 text-neutral-100 min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-200';
+      body.className = 'dark text-[#e9e6e8] min-h-screen antialiased selection:bg-[#ff4f63]/35 selection:text-[#ffb3bc]';
     } else {
       root.classList.remove('dark');
-      body.className = 'bg-neutral-50 text-neutral-900 min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-800';
+      body.className = 'text-[#1d1a1c] min-h-screen antialiased selection:bg-[#c8142c]/25 selection:text-[#9e0b1f]';
     }
   }, [isDark]);
 
@@ -186,23 +186,33 @@ export default function App() {
   }, [handleSelectMode]);
 
   return (
-    <div className="flex flex-col min-h-screen pb-16 md:pb-0">
-      {/* Top Header */}
-      <Header
-        currentMode={currentMode}
-        onSelectMode={handleSelectMode}
-        completedLessonIds={completedLessonIds}
-        totalLessons={BASICS_LESSONS.length}
-        isDark={isDark}
-        onToggleTheme={handleToggleTheme}
-        onOpenCheatSheet={() => {
-          sounds.playClick();
-          setCheatSheetOpen(true);
-        }}
-      />
+    <div className="relative flex flex-col min-h-screen pb-16 md:pb-0 overflow-x-hidden bg-[#09070c] text-neutral-100 selection:bg-rose-500/40 selection:text-rose-100">
+      {/* Ambient Ember-Glazz Glows & Glass Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-[30rem] h-[30rem] rounded-full bg-rose-600/12 blur-[130px]" />
+        <div className="absolute top-1/3 -right-40 w-[28rem] h-[28rem] rounded-full bg-amber-600/10 blur-[140px]" />
+        <div className="absolute -bottom-40 left-1/4 w-[36rem] h-[36rem] rounded-full bg-red-700/10 blur-[150px]" />
+        {/* Subtle glass grid texture */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+      </div>
 
-      {/* Main View Area */}
-      <main className="flex-1">
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {/* Top Header */}
+        <Header
+          currentMode={currentMode}
+          onSelectMode={handleSelectMode}
+          completedLessonIds={completedLessonIds}
+          totalLessons={BASICS_LESSONS.length}
+          isDark={isDark}
+          onToggleTheme={handleToggleTheme}
+          onOpenCheatSheet={() => {
+            sounds.playClick();
+            setCheatSheetOpen(true);
+          }}
+        />
+
+        {/* Main View Area */}
+        <main className="flex-1">
         {currentMode === 'intro' && (
           <IntroView
             onSelectMode={handleSelectMode}
@@ -257,6 +267,7 @@ export default function App() {
         onClose={() => setCheatSheetOpen(false)}
         isDark={isDark}
       />
+      </div>
     </div>
   );
 }

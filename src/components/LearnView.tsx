@@ -154,22 +154,18 @@ export const LearnView: React.FC<LearnViewProps> = ({
   return (
     <div id="learn-view-container" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* Top Bar: Lesson Title & Navigation controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-neutral-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-rose-500/20">
         <div className="flex items-center gap-3">
           <button
             id="toggle-lesson-sidebar-btn"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
-              isDark
-                ? 'border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-neutral-200'
-                : 'border-neutral-200 bg-white hover:bg-neutral-100 text-neutral-800 shadow-xs'
-            }`}
+            className="px-3.5 py-1.5 rounded-lg border border-rose-500/30 bg-black/40 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer text-neutral-200"
           >
             <span>Lesson {currentLesson.id} of 12</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${sidebarOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform text-rose-400 ${sidebarOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_8px_rgba(255,79,99,0.2)]">
             {currentLesson.beltTier}
           </span>
         </div>
@@ -180,15 +176,13 @@ export const LearnView: React.FC<LearnViewProps> = ({
             id="prev-lesson-btn"
             onClick={handlePrevLesson}
             disabled={currentLesson.id === 1}
-            className={`p-2 rounded-lg border text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed ${
-              isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-100'
-            }`}
+            className="p-2 rounded-lg border border-white/10 bg-black/40 text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed text-neutral-300 hover:bg-white/10 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Previous</span>
           </button>
 
-          <div className="text-xs font-mono px-2 text-neutral-400">
+          <div className="text-xs font-mono px-2 text-rose-400 font-bold">
             {completedLessonIds.length} / {BASICS_LESSONS.length} solved
           </div>
 
@@ -196,9 +190,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
             id="next-lesson-btn"
             onClick={handleNextLesson}
             disabled={currentLesson.id === BASICS_LESSONS.length}
-            className={`p-2 rounded-lg border text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed ${
-              isDark ? 'border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800' : 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-100'
-            }`}
+            className="p-2 rounded-lg border border-white/10 bg-black/40 text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed text-neutral-300 hover:bg-white/10 cursor-pointer"
           >
             <span className="hidden sm:inline">Next</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -210,9 +202,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
       {sidebarOpen && (
         <div
           id="lessons-selector-drawer"
-          className={`p-4 rounded-2xl border transition-all animate-fade-in grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 ${
-            isDark ? 'bg-neutral-900/90 border-neutral-800' : 'bg-neutral-50 border-neutral-200'
-          }`}
+          className="p-4 rounded-2xl glazz-panel border border-rose-500/30 transition-all animate-fade-in grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 shadow-2xl"
         >
           {BASICS_LESSONS.map((lesson) => {
             const isCompleted = completedLessonIds.includes(lesson.id);
@@ -225,24 +215,20 @@ export const LearnView: React.FC<LearnViewProps> = ({
                   onSelectLesson(lesson.id);
                   setSidebarOpen(false);
                 }}
-                className={`p-2.5 rounded-xl border text-left transition-all flex items-start justify-between gap-2 ${
+                className={`p-2.5 rounded-xl border text-left transition-all flex items-start justify-between gap-2 cursor-pointer ${
                   isSelected
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 font-semibold'
+                    ? 'border-rose-500 bg-rose-500/20 text-rose-300 font-semibold shadow-[0_0_12px_rgba(255,79,99,0.3)]'
                     : isCompleted
-                    ? isDark
-                      ? 'border-neutral-800/80 bg-neutral-900/60 text-neutral-300 hover:border-neutral-700'
-                      : 'border-neutral-200 bg-white text-neutral-800 hover:border-neutral-300'
-                    : isDark
-                    ? 'border-neutral-800/40 bg-neutral-950/40 text-neutral-500 hover:text-neutral-300'
-                    : 'border-neutral-200 bg-neutral-100 text-neutral-500 hover:text-neutral-800'
+                    ? 'border-rose-500/30 bg-black/40 text-neutral-200 hover:border-rose-500/60'
+                    : 'border-white/5 bg-black/30 text-neutral-400 hover:text-neutral-200 hover:border-white/20'
                 }`}
               >
                 <div>
-                  <div className="text-[11px] font-mono text-neutral-400">Lesson {lesson.id}</div>
+                  <div className="text-[11px] font-mono text-rose-400/80">Lesson {lesson.id}</div>
                   <div className="text-xs font-medium truncate max-w-[150px]">{lesson.title.replace(/^Lesson \d+:\s*/, '')}</div>
                 </div>
                 {isCompleted && (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <CheckCircle2 className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                 )}
               </button>
             );
@@ -254,25 +240,21 @@ export const LearnView: React.FC<LearnViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Theory & Pedagogy (5 columns) */}
         <div className="lg:col-span-5 space-y-4">
-          <div
-            className={`p-6 rounded-2xl border space-y-4 ${
-              isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200 shadow-xs'
-            }`}
-          >
+          <div className="p-6 rounded-2xl glazz-panel space-y-4">
             <div>
-              <span className="text-xs font-mono text-emerald-500 font-bold tracking-wide uppercase">
+              <span className="text-xs font-mono text-rose-400 font-bold tracking-wide uppercase">
                 {currentLesson.beltTier}
               </span>
-              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1">
+              <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1 heading-bar-h2">
                 {currentLesson.title}
               </h2>
-              <p className={`text-xs italic mt-0.5 ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+              <p className="text-xs italic mt-2 text-neutral-400">
                 {currentLesson.subtitle}
               </p>
             </div>
 
             {/* Theory Paragraphs */}
-            <div className={`space-y-3 text-sm leading-relaxed ${isDark ? 'text-neutral-300' : 'text-neutral-700'}`}>
+            <div className="space-y-3 text-sm leading-relaxed text-neutral-300">
               {currentLesson.theory.map((para, idx) => (
                 <p key={idx} className="leading-relaxed">
                   {para}
@@ -282,12 +264,8 @@ export const LearnView: React.FC<LearnViewProps> = ({
 
             {/* Pro-Tip Box */}
             {currentLesson.tip && (
-              <div
-                className={`p-3.5 rounded-xl border text-xs space-y-1 ${
-                  isDark ? 'bg-neutral-950/60 border-neutral-800 text-neutral-300' : 'bg-emerald-50/60 border-emerald-200 text-neutral-800'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+              <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-950/20 text-xs space-y-1 text-amber-200">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300">
                   <Info className="w-3.5 h-3.5" />
                   <span>Dojo Sensei Tip</span>
                 </div>
@@ -300,15 +278,11 @@ export const LearnView: React.FC<LearnViewProps> = ({
         {/* Right Column: Exercise & Interactive Tester (7 columns) */}
         <div className="lg:col-span-7 space-y-5">
           {/* Exercise Prompt Box */}
-          <div
-            className={`p-5 rounded-2xl border space-y-4 ${
-              isDark ? 'bg-neutral-900/70 border-neutral-800' : 'bg-white border-neutral-200 shadow-xs'
-            }`}
-          >
+          <div className="p-5 rounded-2xl glazz-panel space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">The Trial</span>
-                <h3 className="text-base font-bold tracking-tight mt-0.5">
+                <h3 className="text-base font-bold tracking-tight mt-1 heading-bar-h3">
                   {currentLesson.exercisePrompt}
                 </h3>
               </div>
@@ -316,9 +290,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 id="reset-exercise-btn"
                 onClick={handleReset}
                 title="Reset input"
-                className={`p-2 rounded-lg border transition-colors ${
-                  isDark ? 'border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800' : 'border-neutral-200 text-neutral-500 hover:bg-neutral-100'
-                }`}
+                className="p-2 rounded-lg border border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -334,13 +306,11 @@ export const LearnView: React.FC<LearnViewProps> = ({
               <div
                 className={`flex items-center px-3 py-2.5 rounded-xl border font-mono text-sm transition-all ${
                   allPassed
-                    ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-emerald-950/20'
-                    : isDark
-                    ? 'border-neutral-700 bg-neutral-950 focus-within:border-emerald-500/60 focus-within:ring-2 focus-within:ring-emerald-500/20'
-                    : 'border-neutral-300 bg-neutral-50 focus-within:border-emerald-500/60 focus-within:ring-2 focus-within:ring-emerald-500/20'
+                    ? 'border-rose-500 ring-2 ring-rose-500/30 bg-rose-950/30 shadow-[0_0_16px_rgba(255,79,99,0.25)]'
+                    : 'border-rose-500/40 bg-black/60 focus-within:border-rose-400 focus-within:ring-2 focus-within:ring-rose-500/25'
                 }`}
               >
-                <span className="text-neutral-500 font-bold select-none text-base">/</span>
+                <span className="text-rose-500 font-bold select-none text-base">/</span>
                 <input
                   id="lesson-regex-input"
                   type="text"
@@ -349,9 +319,9 @@ export const LearnView: React.FC<LearnViewProps> = ({
                   placeholder="type pattern here..."
                   autoComplete="off"
                   spellCheck="false"
-                  className="flex-1 bg-transparent px-2 font-mono text-sm text-emerald-400 focus:outline-none placeholder:text-neutral-600"
+                  className="flex-1 bg-transparent px-2 font-mono text-sm text-rose-300 focus:outline-none placeholder:text-neutral-600"
                 />
-                <span className="text-neutral-500 font-bold select-none text-base">/</span>
+                <span className="text-rose-500 font-bold select-none text-base">/</span>
                 <input
                   id="lesson-regex-flags"
                   type="text"
@@ -369,12 +339,10 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 <button
                   id="toggle-hint-btn"
                   onClick={() => setShowHint(!showHint)}
-                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors ${
+                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
                     showHint
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                      : isDark
-                      ? 'border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
-                      : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(217,164,65,0.3)]'
+                      : 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
                   }`}
                 >
                   <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
@@ -384,12 +352,10 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 <button
                   id="toggle-solution-btn"
                   onClick={handleApplySolution}
-                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors ${
+                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
                     showSolution
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                      : isDark
-                      ? 'border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
-                      : 'border-neutral-200 text-neutral-600 hover:bg-neutral-100'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_8px_rgba(255,79,99,0.3)]'
+                      : 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
                   }`}
                 >
                   <Eye className="w-3.5 h-3.5 text-rose-400" />
@@ -397,7 +363,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 </button>
               </div>
 
-              <div className="text-xs font-mono text-neutral-400">
+              <div className="text-xs font-mono text-rose-400">
                 {testResults.filter((r) => r.passed).length} / {currentLesson.testCases.length} Tests Passing
               </div>
             </div>
@@ -406,11 +372,9 @@ export const LearnView: React.FC<LearnViewProps> = ({
             {showHint && (
               <div
                 id="lesson-hint-box"
-                className={`p-3 rounded-xl border text-xs leading-relaxed animate-fade-in ${
-                  isDark ? 'bg-amber-950/20 border-amber-500/30 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900'
-                }`}
+                className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-950/30 text-amber-200 text-xs leading-relaxed animate-fade-in"
               >
-                <span className="font-bold">Hint: </span>
+                <span className="font-bold text-amber-300">Hint: </span>
                 {currentLesson.hint}
               </div>
             )}
@@ -419,11 +383,9 @@ export const LearnView: React.FC<LearnViewProps> = ({
             {showSolution && (
               <div
                 id="lesson-solution-box"
-                className={`p-3 rounded-xl border text-xs font-mono flex items-center justify-between animate-fade-in ${
-                  isDark ? 'bg-rose-950/20 border-rose-500/30 text-rose-300' : 'bg-rose-50 border-rose-200 text-rose-900'
-                }`}
+                className="p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/30 text-rose-300 text-xs font-mono flex items-center justify-between animate-fade-in"
               >
-                <span>Solution: <code className="font-bold text-rose-400">/{currentLesson.solution}/</code></span>
+                <span>Solution: <code className="font-bold text-rose-300 crimson-terminal-code px-1.5 py-0.5 rounded">/{currentLesson.solution}/</code></span>
                 <span className="text-[11px] text-neutral-400">No shame in learning. Try modifying it!</span>
               </div>
             )}
@@ -431,7 +393,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
 
           {/* Test Cases List */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-rose-400/80">
               Test Cases ({testResults.length})
             </h4>
 
@@ -444,12 +406,8 @@ export const LearnView: React.FC<LearnViewProps> = ({
                     id={`test-case-row-${idx}`}
                     className={`p-3.5 rounded-xl border transition-all ${
                       passed
-                        ? isDark
-                          ? 'bg-emerald-950/15 border-emerald-500/30'
-                          : 'bg-emerald-50/50 border-emerald-200'
-                        : isDark
-                        ? 'bg-neutral-900/60 border-neutral-800'
-                        : 'bg-white border-neutral-200 shadow-xs'
+                        ? 'bg-rose-950/20 border-rose-500/40 shadow-[0_0_12px_rgba(255,79,99,0.1)]'
+                        : 'glazz-card border-white/10'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3 mb-2">
@@ -457,13 +415,13 @@ export const LearnView: React.FC<LearnViewProps> = ({
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${
                             testCase.shouldMatch
-                              ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                              : 'bg-neutral-800 text-neutral-400 border border-neutral-700'
+                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                              : 'bg-black/60 text-neutral-400 border border-white/10'
                           }`}
                         >
                           {testCase.shouldMatch ? 'Must Match' : 'Must NOT Match'}
                         </span>
-                        <span className={`text-xs ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                        <span className="text-xs text-neutral-300">
                           {testCase.explanation}
                         </span>
                       </div>
@@ -471,13 +429,13 @@ export const LearnView: React.FC<LearnViewProps> = ({
                       {/* Verdict Badge */}
                       <div className="shrink-0">
                         {passed ? (
-                          <div className="flex items-center gap-1 text-xs font-bold text-emerald-400">
-                            <CheckCircle2 className="w-4 h-4" />
+                          <div className="flex items-center gap-1 text-xs font-bold text-rose-400 text-glow-crimson">
+                            <CheckCircle2 className="w-4 h-4 text-rose-400" />
                             <span className="hidden sm:inline">PASS</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1 text-xs font-medium text-rose-400">
-                            <XCircle className="w-4 h-4" />
+                          <div className="flex items-center gap-1 text-xs font-medium text-neutral-500">
+                            <XCircle className="w-4 h-4 text-neutral-500" />
                             <span className="hidden sm:inline">FAIL</span>
                           </div>
                         )}
@@ -485,17 +443,13 @@ export const LearnView: React.FC<LearnViewProps> = ({
                     </div>
 
                     {/* Test string with live highlighted segments */}
-                    <div
-                      className={`p-2.5 rounded-lg font-mono text-xs overflow-x-auto border ${
-                        isDark ? 'bg-neutral-950 border-neutral-800/80 text-neutral-200' : 'bg-neutral-100 border-neutral-200 text-neutral-800'
-                      }`}
-                    >
+                    <div className="p-2.5 rounded-lg font-mono text-xs overflow-x-auto border border-white/10 bg-black/60 text-neutral-200">
                       {segments.map((seg, sIdx) => {
                         if (seg.isMatch) {
                           return (
                             <mark
                               key={sIdx}
-                              className="bg-emerald-500/30 text-emerald-200 px-0.5 rounded border-b-2 border-emerald-400 font-semibold"
+                              className="bg-rose-500/30 text-rose-200 px-1 py-0.5 rounded border border-rose-500/60 shadow-[0_0_8px_rgba(255,79,99,0.3)] font-bold"
                             >
                               {seg.text}
                             </mark>
@@ -514,21 +468,17 @@ export const LearnView: React.FC<LearnViewProps> = ({
           {allPassed && (
             <div
               id="lesson-success-banner"
-              className={`p-5 rounded-2xl border flex flex-col sm:flex-row items-center justify-between gap-4 animate-scale-up ${
-                isDark
-                  ? 'bg-gradient-to-r from-emerald-950/40 via-neutral-900 to-neutral-900 border-emerald-500/40 text-neutral-100'
-                  : 'bg-emerald-50 border-emerald-300 text-neutral-900'
-              }`}
+              className="p-5 rounded-2xl border border-rose-500/50 glazz-panel-crimson flex flex-col sm:flex-row items-center justify-between gap-4 animate-scale-up shadow-2xl"
             >
               <div className="flex items-center gap-3 text-center sm:text-left">
-                <div className="p-2.5 rounded-xl bg-emerald-500 text-neutral-950 font-bold shrink-0">
-                  <Sparkles className="w-5 h-5" />
+                <div className="p-2.5 rounded-xl btn-glazz-cta shrink-0">
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-emerald-400">Trial Conquered!</h4>
+                  <h4 className="text-base font-bold text-rose-300 text-glow-crimson">Trial Conquered!</h4>
                   <p className="text-xs text-neutral-300">
                     {currentLesson.id === 12
-                      ? 'You have completed all 12 trials of The Basics and earned the Black Belt Sensei rank!'
+                      ? 'You have completed all 12 trials of The Basics and earned the Ember Sensei rank!'
                       : 'All test conditions satisfied. Progress committed to memory.'}
                   </p>
                 </div>
@@ -538,7 +488,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 <button
                   id="success-next-lesson-btn"
                   onClick={handleNextLesson}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-emerald-500/20 cursor-pointer"
+                  className="btn-glazz-cta px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 cursor-pointer"
                 >
                   <span>Advance to Lesson {currentLesson.id + 1}</span>
                   <ArrowRight className="w-4 h-4" />

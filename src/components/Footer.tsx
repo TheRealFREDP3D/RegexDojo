@@ -20,19 +20,15 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer
       id="main-app-footer"
-      className={`border-t transition-colors ${
-        isDark
-          ? 'bg-neutral-950 border-neutral-850 text-neutral-400'
-          : 'bg-neutral-50 border-neutral-200 text-neutral-600'
-      }`}
+      className="ember-glass-panel border-t border-rose-500/20 text-neutral-400 transition-colors"
     >
       {/* Mobile Sticky Tab Bar (shown on small screens) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-neutral-950/95 backdrop-blur-lg border-t border-neutral-800 px-2 py-2 flex items-center justify-around">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 ember-glass-panel border-t border-rose-500/30 px-2 py-2 flex items-center justify-around">
         <button
           id="mobile-nav-intro"
           onClick={() => onSelectMode('intro')}
           className={`flex flex-col items-center gap-1 p-1 text-[11px] ${
-            currentMode === 'intro' ? 'text-emerald-400 font-semibold' : 'text-neutral-400'
+            currentMode === 'intro' ? 'text-rose-400 font-semibold text-glow-crimson' : 'text-neutral-400'
           }`}
         >
           <Terminal className="w-4 h-4" />
@@ -42,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({
           id="mobile-nav-learn"
           onClick={() => onSelectMode('learn')}
           className={`flex flex-col items-center gap-1 p-1 text-[11px] relative ${
-            currentMode === 'learn' ? 'text-emerald-400 font-semibold' : 'text-neutral-400'
+            currentMode === 'learn' ? 'text-rose-400 font-semibold text-glow-crimson' : 'text-neutral-400'
           }`}
         >
           <GraduationCap className="w-4 h-4" />
@@ -52,7 +48,7 @@ export const Footer: React.FC<FooterProps> = ({
           id="mobile-nav-translate"
           onClick={() => onSelectMode('translate')}
           className={`flex flex-col items-center gap-1 p-1 text-[11px] ${
-            currentMode === 'translate' ? 'text-emerald-400 font-semibold' : 'text-neutral-400'
+            currentMode === 'translate' ? 'text-rose-400 font-semibold text-glow-crimson' : 'text-neutral-400'
           }`}
         >
           <ArrowLeftRight className="w-4 h-4" />
@@ -62,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({
           id="mobile-nav-playground"
           onClick={() => onSelectMode('playground')}
           className={`flex flex-col items-center gap-1 p-1 text-[11px] ${
-            currentMode === 'playground' ? 'text-emerald-400 font-semibold' : 'text-neutral-400'
+            currentMode === 'playground' ? 'text-rose-400 font-semibold text-glow-crimson' : 'text-neutral-400'
           }`}
         >
           <Play className="w-4 h-4" />
@@ -82,9 +78,9 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 hidden md:flex items-center justify-between text-xs">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 font-mono text-neutral-300">
-            <span className="font-bold text-emerald-400">RegexDojo</span>
-            <span>&bull;</span>
-            <span className={isDark ? 'text-neutral-400' : 'text-neutral-500'}>
+            <span className="font-bold text-rose-500 text-glow-crimson">RegexDojo</span>
+            <span className="text-rose-500/60">&diams;</span>
+            <span className="text-neutral-400">
               &quot;Some people, when confronted with a problem, think &apos;I know, I&apos;ll use regex.&apos; Now they have two problems.&quot;
             </span>
           </div>
@@ -94,14 +90,14 @@ export const Footer: React.FC<FooterProps> = ({
           <button
             id="footer-cheat-sheet-btn"
             onClick={onOpenCheatSheet}
-            className="hover:text-emerald-400 flex items-center gap-1 transition-colors"
+            className="hover:text-rose-400 flex items-center gap-1 transition-colors cursor-pointer"
           >
-            <BookOpen className="w-3.5 h-3.5" />
+            <BookOpen className="w-3.5 h-3.5 text-rose-500" />
             <span>Reference Cheat Sheet</span>
           </button>
           <span className="text-neutral-700">&bull;</span>
           <span className="text-neutral-500">
-            Runs entirely in your browser with zero telemetry.
+            Ember-Glazz Edition &bull; Retro Monospace Terminal
           </span>
         </div>
       </div>

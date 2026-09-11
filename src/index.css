@@ -6,45 +6,239 @@
 }
 
 @layer base {
-  :root {
-    --font-mono: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
-    --font-crt: 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace;
+  /* ========================================================================= */
+  /* THEME SYSTEM VARIABLES                                                    */
+  /* ========================================================================= */
+
+  :root,
+  body[data-theme="warm-halo"],
+  body[data-theme="ember-glazz"],
+  body:not([data-theme]) {
+    --th-canvas: #08080a;
+    --th-text: #e9e6e8;
+    --th-text-muted: #a39ea2;
+    --th-accent: #ff4f63;
+    --th-accent-rgb: 255, 79, 99;
+    --th-accent-alt: #c8142c;
+    --th-secondary: #ff6a3d;
+    --th-secondary-rgb: 255, 106, 61;
+    --th-glow: rgba(255, 79, 99, 0.45);
     
-    /* Ember Glazz Color Palette */
-    --ag-canvas: #08080a;
-    --ag-glass: 22, 22, 27;
-    --ag-glass-soft: 32, 32, 39;
-    --ag-panel-alpha: 0.68;
-    --ag-accent: #ff6b78;
-    --ag-accent-rgb: 255, 107, 120;
-    --ag-accent-deep: #c8142c;
-    --ag-accent-vivid: #ff4f63;
-    --ag-glow: rgba(255, 79, 99, 0.28);
+    --th-panel-bg: rgba(22, 22, 27, 0.74);
+    --th-panel-border: rgba(255, 79, 99, 0.28);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55), 0 0 24px -4px rgba(255, 79, 99, 0.16);
     
-    /* Willemstadt Heading Colors */
-    --ag-h1-bg: #2c0d13;
-    --ag-h1-fg: #ffb3bc;
-    --ag-h1-border: #ff2f45;
+    --th-card-bg: rgba(24, 22, 28, 0.65);
+    --th-card-border: rgba(228, 220, 222, 0.12);
+    --th-card-hover-border: rgba(255, 107, 120, 0.45);
     
-    --ag-h2-bg: #2a1410;
-    --ag-h2-fg: #ffc2a6;
-    --ag-h2-border: #ff6a3d;
+    --th-code-bg: rgba(8, 8, 11, 0.90);
+    --th-code-border: rgba(255, 107, 120, 0.25);
+    --th-code-text: #ffb3bb;
     
-    --ag-h3-bg: #26200f;
-    --ag-h3-fg: #e9d191;
-    --ag-h3-border: #d9a441;
+    --th-btn-grad: linear-gradient(135deg, #ff4f63 0%, #c8142c 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #ff6b7a 0%, #d9203a 100%);
+    --th-btn-shadow: 0 4px 16px rgba(225, 29, 51, 0.40);
     
-    --ag-h4-bg: #221426;
-    --ag-h4-fg: #dcb6ea;
-    --ag-h4-border: #a259c9;
+    --th-gem-color: #ff6b78;
+
+    --th-h1-bg: #2c0d13; --th-h1-fg: #ffb3bc; --th-h1-border: #ff2f45;
+    --th-h2-bg: #2a1410; --th-h2-fg: #ffc2a6; --th-h2-border: #ff6a3d;
+    --th-h3-bg: #26200f; --th-h3-fg: #e9d191; --th-h3-border: #d9a441;
+    --th-h4-bg: #221426; --th-h4-fg: #dcb6ea; --th-h4-border: #a259c9;
+    --th-h5-bg: #171f21; --th-h5-fg: #b6cbcf; --th-h5-border: #6f8b96;
+    --th-h6-bg: #1a1a1e; --th-h6-fg: #b6b3bd; --th-h6-border: #6e6e78;
+  }
+
+  /* 2. Glacius (Obsidian Frost & Cosmic Glacial Theme) */
+  body[data-theme="glacius"],
+  body[data-theme="aether-core"] {
+    --th-canvas: #0b0e14;
+    --th-text: #e2f1f8;
+    --th-text-muted: #8faec2;
+    --th-accent: #00f0ff;
+    --th-accent-rgb: 0, 240, 255;
+    --th-accent-alt: #0284c7;
+    --th-secondary: #38bdf8;
+    --th-secondary-rgb: 56, 189, 248;
+    --th-glow: rgba(0, 240, 255, 0.45);
     
-    --ag-h5-bg: #171f21;
-    --ag-h5-fg: #b6cbcf;
-    --ag-h5-border: #6f8b96;
+    --th-panel-bg: rgba(14, 20, 30, 0.78);
+    --th-panel-border: rgba(0, 240, 255, 0.30);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.65), 0 0 24px -4px rgba(0, 240, 255, 0.18);
     
-    --ag-h6-bg: #1a1a1e;
-    --ag-h6-fg: #b6b3bd;
-    --ag-h6-border: #6e6e78;
+    --th-card-bg: rgba(16, 24, 38, 0.70);
+    --th-card-border: rgba(56, 189, 248, 0.20);
+    --th-card-hover-border: rgba(0, 240, 255, 0.50);
+    
+    --th-code-bg: rgba(7, 11, 18, 0.92);
+    --th-code-border: rgba(0, 240, 255, 0.28);
+    --th-code-text: #bae6fd;
+    
+    --th-btn-grad: linear-gradient(135deg, #00f0ff 0%, #0284c7 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+    --th-btn-shadow: 0 4px 16px rgba(0, 240, 255, 0.35);
+    
+    --th-gem-color: #00f0ff;
+
+    --th-h1-bg: #0c2131; --th-h1-fg: #bae6fd; --th-h1-border: #00f0ff;
+    --th-h2-bg: #0a252f; --th-h2-fg: #a5f3fc; --th-h2-border: #22d3ee;
+    --th-h3-bg: #0f2722; --th-h3-fg: #99f6e4; --th-h3-border: #2dd4bf;
+    --th-h4-bg: #1e1b36; --th-h4-fg: #ddd6fe; --th-h4-border: #a78bfa;
+    --th-h5-bg: #151d28; --th-h5-fg: #cbd5e1; --th-h5-border: #64748b;
+    --th-h6-bg: #10161f; --th-h6-fg: #94a3b8; --th-h6-border: #475569;
+  }
+
+  /* 3. Nord Theme (Arctic Ice & Polar Night) */
+  body[data-theme="nord"] {
+    --th-canvas: #242933;
+    --th-text: #eceff4;
+    --th-text-muted: #d8dee9;
+    --th-accent: #88c0d0;
+    --th-accent-rgb: 136, 192, 208;
+    --th-accent-alt: #5e81ac;
+    --th-secondary: #81a1c1;
+    --th-secondary-rgb: 129, 161, 193;
+    --th-glow: rgba(136, 192, 208, 0.40);
+    
+    --th-panel-bg: rgba(46, 52, 64, 0.82);
+    --th-panel-border: rgba(136, 192, 208, 0.32);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55), 0 0 24px -4px rgba(136, 192, 208, 0.16);
+    
+    --th-card-bg: rgba(59, 66, 82, 0.72);
+    --th-card-border: rgba(136, 192, 208, 0.20);
+    --th-card-hover-border: rgba(136, 192, 208, 0.50);
+    
+    --th-code-bg: rgba(36, 41, 51, 0.94);
+    --th-code-border: rgba(136, 192, 208, 0.26);
+    --th-code-text: #88c0d0;
+    
+    --th-btn-grad: linear-gradient(135deg, #88c0d0 0%, #5e81ac 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #8fbcbb 0%, #81a1c1 100%);
+    --th-btn-shadow: 0 4px 16px rgba(136, 192, 208, 0.35);
+    
+    --th-gem-color: #88c0d0;
+
+    --th-h1-bg: #2e3440; --th-h1-fg: #88c0d0; --th-h1-border: #88c0d0;
+    --th-h2-bg: #29303c; --th-h2-fg: #81a1c1; --th-h2-border: #81a1c1;
+    --th-h3-bg: #232c38; --th-h3-fg: #ebcb8b; --th-h3-border: #ebcb8b;
+    --th-h4-bg: #2c2738; --th-h4-fg: #b48ead; --th-h4-border: #b48ead;
+    --th-h5-bg: #22302e; --th-h5-fg: #a3be8c; --th-h5-border: #a3be8c;
+    --th-h6-bg: #3b4252; --th-h6-fg: #d8dee9; --th-h6-border: #4c566a;
+  }
+
+  /* 4. Dracula Theme (Gothic Vampire Neon) */
+  body[data-theme="dracula"] {
+    --th-canvas: #21222c;
+    --th-text: #f8f8f2;
+    --th-text-muted: #6272a4;
+    --th-accent: #bd93f9;
+    --th-accent-rgb: 189, 147, 249;
+    --th-accent-alt: #ff79c6;
+    --th-secondary: #ff79c6;
+    --th-secondary-rgb: 255, 121, 198;
+    --th-glow: rgba(189, 147, 249, 0.45);
+    
+    --th-panel-bg: rgba(40, 42, 54, 0.84);
+    --th-panel-border: rgba(189, 147, 249, 0.35);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.60), 0 0 24px -4px rgba(189, 147, 249, 0.20);
+    
+    --th-card-bg: rgba(52, 55, 70, 0.74);
+    --th-card-border: rgba(255, 121, 198, 0.20);
+    --th-card-hover-border: rgba(189, 147, 249, 0.50);
+    
+    --th-code-bg: rgba(25, 26, 33, 0.94);
+    --th-code-border: rgba(189, 147, 249, 0.30);
+    --th-code-text: #f1fa8c;
+    
+    --th-btn-grad: linear-gradient(135deg, #bd93f9 0%, #ff79c6 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #caa9fa 0%, #ff92d0 100%);
+    --th-btn-shadow: 0 4px 16px rgba(189, 147, 249, 0.40);
+    
+    --th-gem-color: #bd93f9;
+
+    --th-h1-bg: #342544; --th-h1-fg: #bd93f9; --th-h1-border: #bd93f9;
+    --th-h2-bg: #3d2038; --th-h2-fg: #ff79c6; --th-h2-border: #ff79c6;
+    --th-h3-bg: #1c3528; --th-h3-fg: #50fa7b; --th-h3-border: #50fa7b;
+    --th-h4-bg: #38341b; --th-h4-fg: #f1fa8c; --th-h4-border: #f1fa8c;
+    --th-h5-bg: #16363c; --th-h5-fg: #8be9fd; --th-h5-border: #8be9fd;
+    --th-h6-bg: #2e303e; --th-h6-fg: #f8f8f2; --th-h6-border: #6272a4;
+  }
+
+  /* 5. Abyss Theme (VSCode Abyss Official) */
+  body[data-theme="abyss"] {
+    --th-canvas: #000c18;
+    --th-text: #d0e4f5;
+    --th-text-muted: #7092b0;
+    --th-accent: #0088ff;
+    --th-accent-rgb: 0, 136, 255;
+    --th-accent-alt: #0055cc;
+    --th-secondary: #22ddff;
+    --th-secondary-rgb: 34, 221, 255;
+    --th-glow: rgba(0, 136, 255, 0.48);
+    
+    --th-panel-bg: rgba(6, 21, 40, 0.86);
+    --th-panel-border: rgba(0, 136, 255, 0.35);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.70), 0 0 24px -4px rgba(0, 136, 255, 0.22);
+    
+    --th-card-bg: rgba(8, 30, 56, 0.72);
+    --th-card-border: rgba(34, 221, 255, 0.22);
+    --th-card-hover-border: rgba(0, 136, 255, 0.55);
+    
+    --th-code-bg: rgba(2, 10, 20, 0.94);
+    --th-code-border: rgba(0, 136, 255, 0.30);
+    --th-code-text: #66ccff;
+    
+    --th-btn-grad: linear-gradient(135deg, #0088ff 0%, #0044cc 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #2299ff 0%, #0055ee 100%);
+    --th-btn-shadow: 0 4px 16px rgba(0, 136, 255, 0.40);
+    
+    --th-gem-color: #22ddff;
+
+    --th-h1-bg: #031b34; --th-h1-fg: #66bbff; --th-h1-border: #0088ff;
+    --th-h2-bg: #042436; --th-h2-fg: #66e5ff; --th-h2-border: #22ddff;
+    --th-h3-bg: #2a2408; --th-h3-fg: #ffe066; --th-h3-border: #ffd700;
+    --th-h4-bg: #1c1432; --th-h4-fg: #c4b5fd; --th-h4-border: #8b5cf6;
+    --th-h5-bg: #062822; --th-h5-fg: #5eead4; --th-h5-border: #14b8a6;
+    --th-h6-bg: #07192a; --th-h6-fg: #94a3b8; --th-h6-border: #334155;
+  }
+
+  /* 6. Tokyo Night (Cyberpunk Shinjuku Rain) */
+  body[data-theme="tokyo-night"] {
+    --th-canvas: #16161e;
+    --th-text: #c0caf5;
+    --th-text-muted: #7982a9;
+    --th-accent: #7aa2f7;
+    --th-accent-rgb: 122, 162, 247;
+    --th-accent-alt: #bb9af7;
+    --th-secondary: #bb9af7;
+    --th-secondary-rgb: 187, 154, 247;
+    --th-glow: rgba(122, 162, 247, 0.45);
+    
+    --th-panel-bg: rgba(26, 27, 38, 0.84);
+    --th-panel-border: rgba(122, 162, 247, 0.35);
+    --th-panel-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.65), 0 0 24px -4px rgba(122, 162, 247, 0.20);
+    
+    --th-card-bg: rgba(36, 40, 59, 0.74);
+    --th-card-border: rgba(187, 154, 247, 0.22);
+    --th-card-hover-border: rgba(122, 162, 247, 0.50);
+    
+    --th-code-bg: rgba(18, 19, 27, 0.94);
+    --th-code-border: rgba(122, 162, 247, 0.30);
+    --th-code-text: #7dcfff;
+    
+    --th-btn-grad: linear-gradient(135deg, #7aa2f7 0%, #bb9af7 100%);
+    --th-btn-hover-grad: linear-gradient(135deg, #89b4fa 0%, #cba6f7 100%);
+    --th-btn-shadow: 0 4px 16px rgba(122, 162, 247, 0.40);
+    
+    --th-gem-color: #7aa2f7;
+
+    --th-h1-bg: #1c2438; --th-h1-fg: #7aa2f7; --th-h1-border: #7aa2f7;
+    --th-h2-bg: #292038; --th-h2-fg: #bb9af7; --th-h2-border: #bb9af7;
+    --th-h3-bg: #132a32; --th-h3-fg: #7dcfff; --th-h3-border: #7dcfff;
+    --th-h4-bg: #182c22; --th-h4-fg: #9ece6a; --th-h4-border: #9ece6a;
+    --th-h5-bg: #32221c; --th-h5-fg: #ff9e64; --th-h5-border: #ff9e64;
+    --th-h6-bg: #24283b; --th-h6-fg: #c0caf5; --th-h6-border: #565f89;
   }
 
   *,
@@ -58,11 +252,13 @@
     font-family: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
     letter-spacing: 0.02em;
     min-height: 100vh;
+    color: var(--th-text);
   }
 
-  /* Ember Glazz Dark Background Canvas with Atmospheric Ember Radials */
-  body.dark,
-  body {
+  /* Background Canvas per Theme */
+  body[data-theme="warm-halo"],
+  body[data-theme="ember-glazz"],
+  body:not([data-theme]) {
     background-color: #08080a;
     background-image:
       radial-gradient(1000px 700px at 10% 6%, rgba(255, 70, 92, 0.20), transparent 62%),
@@ -71,92 +267,132 @@
       radial-gradient(1200px 800px at 45% 110%, rgba(186, 32, 56, 0.22), transparent 62%),
       linear-gradient(180deg, #121014 0%, #060608 100%);
     background-attachment: fixed;
-    color: #e9e6e8;
   }
 
-  /* Ember Glazz Light Theme */
+  body[data-theme="glacius"],
+  body[data-theme="aether-core"] {
+    background-color: #0b0e14;
+    background-image:
+      radial-gradient(1000px 700px at 15% 8%, rgba(0, 240, 255, 0.18), transparent 60%),
+      radial-gradient(850px 600px at 85% 16%, rgba(56, 189, 248, 0.14), transparent 58%),
+      radial-gradient(750px 520px at 70% 55%, rgba(45, 212, 191, 0.08), transparent 60%),
+      radial-gradient(1200px 800px at 45% 110%, rgba(2, 132, 199, 0.22), transparent 62%),
+      linear-gradient(180deg, #0d131f 0%, #06080d 100%);
+    background-attachment: fixed;
+  }
+
+  body[data-theme="nord"] {
+    background-color: #242933;
+    background-image:
+      radial-gradient(1000px 700px at 10% 8%, rgba(136, 192, 208, 0.18), transparent 60%),
+      radial-gradient(850px 600px at 88% 15%, rgba(129, 161, 193, 0.15), transparent 58%),
+      radial-gradient(750px 520px at 70% 55%, rgba(163, 190, 140, 0.08), transparent 60%),
+      radial-gradient(1200px 800px at 45% 110%, rgba(94, 129, 172, 0.22), transparent 62%),
+      linear-gradient(180deg, #2e3440 0%, #1c2027 100%);
+    background-attachment: fixed;
+  }
+
+  body[data-theme="dracula"] {
+    background-color: #21222c;
+    background-image:
+      radial-gradient(1000px 700px at 12% 8%, rgba(189, 147, 249, 0.20), transparent 60%),
+      radial-gradient(850px 600px at 88% 18%, rgba(255, 121, 198, 0.15), transparent 58%),
+      radial-gradient(750px 520px at 70% 55%, rgba(80, 250, 123, 0.08), transparent 60%),
+      radial-gradient(1200px 800px at 45% 110%, rgba(98, 114, 164, 0.25), transparent 62%),
+      linear-gradient(180deg, #282a36 0%, #17181f 100%);
+    background-attachment: fixed;
+  }
+
+  body[data-theme="abyss"] {
+    background-color: #000c18;
+    background-image:
+      radial-gradient(1000px 700px at 14% 8%, rgba(0, 136, 255, 0.24), transparent 60%),
+      radial-gradient(850px 600px at 86% 20%, rgba(34, 221, 255, 0.16), transparent 58%),
+      radial-gradient(750px 520px at 70% 55%, rgba(255, 215, 0, 0.06), transparent 60%),
+      radial-gradient(1200px 800px at 45% 110%, rgba(0, 68, 170, 0.32), transparent 62%),
+      linear-gradient(180deg, #001428 0%, #000710 100%);
+    background-attachment: fixed;
+  }
+
+  body[data-theme="tokyo-night"] {
+    background-color: #16161e;
+    background-image:
+      radial-gradient(1000px 700px at 12% 8%, rgba(122, 162, 247, 0.20), transparent 60%),
+      radial-gradient(850px 600px at 88% 18%, rgba(187, 154, 247, 0.16), transparent 58%),
+      radial-gradient(750px 520px at 70% 55%, rgba(125, 207, 255, 0.10), transparent 60%),
+      radial-gradient(1200px 800px at 45% 110%, rgba(86, 95, 137, 0.25), transparent 62%),
+      linear-gradient(180deg, #1a1b26 0%, #0f0f14 100%);
+    background-attachment: fixed;
+  }
+
+  /* Light Theme Variant (if dark mode is toggled off) */
   body:not(.dark) {
     background-color: #e9e5e6;
     background-image:
       radial-gradient(900px 620px at 12% 8%, rgba(255, 255, 255, 0.85), transparent 60%),
-      radial-gradient(800px 560px at 88% 16%, rgba(255, 150, 162, 0.38), transparent 62%),
-      radial-gradient(1100px 760px at 50% 108%, rgba(200, 30, 52, 0.20), transparent 62%),
-      linear-gradient(180deg, #f3eff0 0%, #ddd6d8 100%);
+      radial-gradient(800px 560px at 88% 16%, rgba(var(--th-accent-rgb), 0.28), transparent 62%),
+      radial-gradient(1100px 760px at 50% 108%, rgba(var(--th-accent-rgb), 0.15), transparent 62%),
+      linear-gradient(180deg, #f5f2f4 0%, #ded7da 100%);
     background-attachment: fixed;
     color: #1d1a1c;
   }
 
-  code,
-  pre,
-  kbd,
-  samp,
-  input,
-  textarea,
-  select,
-  button,
-  p,
-  span,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  label,
-  td,
-  th {
+  code, pre, kbd, samp, input, textarea, select, button, p, span, h1, h2, h3, h4, h5, h6, label, td, th {
     font-family: 'Share Tech Mono', 'Space Mono', 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
   }
 }
 
 /* ========================================================================= */
-/* EMBER-GLAZZ: Frosted Glass & Crimson Terminal Core Utility Classes        */
+/* CORE FROSTED GLASS & TERMINAL UTILITY CLASSES (THEME-DRIVEN)              */
 /* ========================================================================= */
 
-/* Frosted Glass Panels */
 .glazz-panel {
-  background: rgba(22, 22, 27, 0.72);
+  background: var(--th-panel-bg);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(228, 220, 222, 0.11);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.52), inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--th-panel-border);
+  box-shadow: var(--th-panel-shadow);
 }
 
-.glazz-panel-crimson {
-  background: rgba(28, 14, 19, 0.76);
+.glazz-panel-crimson,
+.ember-glass-panel,
+.ember-glass-panel-crimson {
+  background: var(--th-panel-bg);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(255, 79, 99, 0.32);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55), 0 0 24px -4px rgba(255, 79, 99, 0.18), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--th-panel-border);
+  box-shadow: var(--th-panel-shadow);
 }
 
 .glazz-card {
-  background: rgba(24, 22, 28, 0.65);
+  background: var(--th-card-bg);
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
-  border: 1px solid rgba(228, 220, 222, 0.1);
+  border: 1px solid var(--th-card-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: all 0.2s ease-in-out;
 }
 
 .glazz-card:hover {
-  border-color: rgba(255, 107, 120, 0.35);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 79, 99, 0.15);
+  border-color: var(--th-card-hover-border);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 0 18px var(--th-glow);
 }
 
 /* Light mode overrides for glass */
-body:not(.dark) .glazz-panel {
-  background: rgba(250, 248, 249, 0.82);
+body:not(.dark) .glazz-panel,
+body:not(.dark) .glazz-panel-crimson,
+body:not(.dark) .ember-glass-panel {
+  background: rgba(250, 248, 249, 0.88);
   border: 1px solid rgba(60, 44, 48, 0.16);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 body:not(.dark) .glazz-card {
-  background: rgba(244, 240, 242, 0.78);
+  background: rgba(244, 240, 242, 0.82);
   border: 1px solid rgba(60, 44, 48, 0.14);
 }
 
-/* Signature Gem-Style Horizontal Rule Divider from Ember-Glazz */
+/* Signature Gem-Style Horizontal Rule Divider */
 .gem-divider {
   border: none;
   height: 2px;
@@ -166,12 +402,12 @@ body:not(.dark) .glazz-card {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 107, 120, 0.45) 12%,
-    rgba(255, 107, 120, 0.45) 43%,
+    rgba(var(--th-accent-rgb), 0.45) 12%,
+    rgba(var(--th-accent-rgb), 0.45) 43%,
     transparent 46%,
     transparent 54%,
-    rgba(255, 107, 120, 0.45) 57%,
-    rgba(255, 107, 120, 0.45) 88%,
+    rgba(var(--th-accent-rgb), 0.45) 57%,
+    rgba(var(--th-accent-rgb), 0.45) 88%,
     transparent 100%
   );
 }
@@ -184,148 +420,177 @@ body:not(.dark) .glazz-card {
   width: 22px;
   height: 22px;
   transform: translate(-50%, -50%);
-  background-color: #ff6b78;
+  background-color: var(--th-gem-color);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M66 2 L94 34 L76 98 L30 84 L6 38 L34 10 Z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M66 2 L94 34 L76 98 L30 84 L6 38 L34 10 Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  filter: drop-shadow(0 0 8px rgba(255, 107, 120, 0.7));
+  filter: drop-shadow(0 0 8px var(--th-glow));
 }
 
-/* Six Colored Heading Bars (Ember Glazz Willemstadt Feature) */
+/* Heading Bars (Dynamic Theme Palette) */
 .heading-bar-h1 {
-  border-left: 3.5px solid #ff2f45;
-  background-color: #2c0d13;
-  color: #ffb3bc;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h1-border);
+  background-color: var(--th-h1-bg);
+  color: var(--th-h1-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.7em;
-  box-shadow: -4px 0 12px -2px rgba(255, 47, 69, 0.4);
+  box-shadow: -4px 0 12px -2px rgba(var(--th-accent-rgb), 0.35);
 }
 
 .heading-bar-h2 {
-  border-left: 3.5px solid #ff6a3d;
-  background-color: #2a1410;
-  color: #ffc2a6;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h2-border);
+  background-color: var(--th-h2-bg);
+  color: var(--th-h2-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.7em;
-  box-shadow: -4px 0 12px -2px rgba(255, 106, 61, 0.4);
+  box-shadow: -4px 0 12px -2px rgba(var(--th-secondary-rgb), 0.35);
 }
 
 .heading-bar-h3 {
-  border-left: 3.5px solid #d9a441;
-  background-color: #26200f;
-  color: #e9d191;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h3-border);
+  background-color: var(--th-h3-bg);
+  color: var(--th-h3-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.7em;
-  box-shadow: -4px 0 12px -2px rgba(217, 164, 65, 0.35);
 }
 
 .heading-bar-h4 {
-  border-left: 3.5px solid #a259c9;
-  background-color: #221426;
-  color: #dcb6ea;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h4-border);
+  background-color: var(--th-h4-bg);
+  color: var(--th-h4-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.7em;
-  box-shadow: -4px 0 12px -2px rgba(162, 89, 201, 0.35);
 }
 
 .heading-bar-h5 {
-  border-left: 3.5px solid #6f8b96;
-  background-color: #171f21;
-  color: #b6cbcf;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h5-border);
+  background-color: var(--th-h5-bg);
+  color: var(--th-h5-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.6em;
-  box-shadow: -4px 0 12px -2px rgba(111, 139, 150, 0.3);
 }
 
 .heading-bar-h6 {
-  border-left: 3.5px solid #6e6e78;
-  background-color: #1a1a1e;
-  color: #b6b3bd;
-  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 45%);
+  border-left: 3.5px solid var(--th-h6-border);
+  background-color: var(--th-h6-bg);
+  color: var(--th-h6-fg);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
   padding: 0.3em 0.6em;
-  box-shadow: -4px 0 12px -2px rgba(110, 110, 120, 0.3);
 }
 
-/* Ember Glazz Crimson Terminal Code */
+/* Terminal Code Blocks */
 .crimson-terminal-code {
-  background: rgba(8, 8, 11, 0.88);
-  border: 1px solid rgba(255, 107, 120, 0.22);
-  color: #ffb3bb;
+  background: var(--th-code-bg);
+  border: 1px solid var(--th-code-border);
+  color: var(--th-code-text);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .crimson-inline-code {
-  background-color: rgba(255, 107, 120, 0.12);
-  color: #ffb3bb;
-  border: 1px solid rgba(255, 107, 120, 0.24);
-  border-radius: 3px;
+  background-color: rgba(var(--th-accent-rgb), 0.14);
+  color: var(--th-accent);
+  border: 1px solid rgba(var(--th-accent-rgb), 0.30);
+  border-radius: 4px;
   padding: 0.12em 0.4em;
 }
 
-/* Ember Glazz Callout Blocks */
-.glazz-callout {
-  background: rgba(32, 32, 39, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(228, 220, 222, 0.12);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.glazz-callout-note {
-  border-color: rgba(255, 77, 96, 0.4);
-}
-
-.glazz-callout-note .callout-header {
-  background: linear-gradient(90deg, #c8142c 0%, #ff6a3d 100%);
-  color: #1c0507;
+/* CTA & Secondary Buttons */
+.btn-glazz-cta,
+.btn-ember-primary {
+  background: var(--th-btn-grad) !important;
+  color: #ffffff !important;
   font-weight: 700;
-}
-
-/* Ember Glazz CTA Button (linear gradient crimson to deep ruby with ember glow) */
-.btn-glazz-cta {
-  background: linear-gradient(135deg, #ff4f63 0%, #c8142c 100%);
-  color: #fff2f3;
-  font-weight: 700;
-  border: 1px solid rgba(255, 107, 120, 0.4);
-  box-shadow: 0 4px 16px rgba(225, 29, 51, 0.35);
+  border: 1px solid rgba(var(--th-accent-rgb), 0.45);
+  box-shadow: var(--th-btn-shadow);
   transition: all 0.2s ease;
 }
 
-.btn-glazz-cta:hover {
-  background: linear-gradient(135deg, #ff6b7a 0%, #d9203a 100%);
-  box-shadow: 0 6px 22px rgba(225, 29, 51, 0.55);
+.btn-glazz-cta:hover,
+.btn-ember-primary:hover {
+  background: var(--th-btn-hover-grad) !important;
+  box-shadow: 0 6px 22px var(--th-glow);
   transform: translateY(-1px);
 }
 
 .btn-glazz-secondary {
-  background-color: rgba(255, 107, 120, 0.08);
-  border: 1px solid rgba(228, 220, 222, 0.14);
-  color: #e9e6e8;
+  background-color: rgba(var(--th-accent-rgb), 0.10);
+  border: 1px solid rgba(var(--th-accent-rgb), 0.25);
+  color: var(--th-text);
   transition: all 0.2s ease;
 }
 
 .btn-glazz-secondary:hover {
-  background-color: rgba(255, 107, 120, 0.18);
-  border-color: rgba(255, 107, 120, 0.35);
+  background-color: rgba(var(--th-accent-rgb), 0.20);
+  border-color: rgba(var(--th-accent-rgb), 0.45);
   color: #ffffff;
 }
 
-/* Retro CRT text glow utility */
-.font-terminal,
-.font-crt {
-  font-family: 'VT323', ui-monospace, Menlo, Monaco, Consolas, monospace !important;
-  letter-spacing: 0.06em;
-}
-
+/* Text Glows */
 .text-glow-crimson {
-  text-shadow: 0 0 12px rgba(255, 79, 99, 0.6);
+  text-shadow: 0 0 12px var(--th-glow) !important;
 }
 
 .text-glow-amber {
-  text-shadow: 0 0 12px rgba(255, 106, 61, 0.55);
+  text-shadow: 0 0 12px rgba(var(--th-secondary-rgb), 0.55);
 }
 
-/* Custom scrollbars for Ember Glazz retro terminal feel */
+/* ========================================================================= */
+/* CONTEXTUAL THEME HARMONIZERS (Dynamic Color Sync Across All Subcomponents)*/
+/* ========================================================================= */
+
+body[data-theme="glacius"],
+body[data-theme="aether-core"],
+body[data-theme="nord"],
+body[data-theme="dracula"],
+body[data-theme="abyss"],
+body[data-theme="tokyo-night"] {
+  /* Dynamic text accent mapping */
+  .text-rose-400,
+  .text-rose-300,
+  .text-rose-500 {
+    color: var(--th-accent) !important;
+  }
+
+  /* Dynamic background accent mapping */
+  .bg-rose-500,
+  .bg-rose-600 {
+    background-color: var(--th-accent) !important;
+  }
+
+  /* Dynamic background transparent tint mapping */
+  .bg-rose-500\/10,
+  .bg-rose-500\/15,
+  .bg-rose-500\/20,
+  .bg-rose-500\/25,
+  .bg-rose-500\/30,
+  .bg-rose-950\/20,
+  .bg-rose-950\/30,
+  .bg-rose-950\/60 {
+    background-color: rgba(var(--th-accent-rgb), 0.16) !important;
+  }
+
+  /* Dynamic border accent mapping */
+  .border-rose-500,
+  .border-rose-400,
+  .border-rose-500\/20,
+  .border-rose-500\/30,
+  .border-rose-500\/40,
+  .border-rose-500\/50,
+  .border-rose-500\/60,
+  .border-rose-500\/70 {
+    border-color: rgba(var(--th-accent-rgb), 0.38) !important;
+  }
+
+  /* Dynamic mark highlight mapping in playground */
+  mark.bg-rose-500\/30,
+  mark.bg-emerald-500\/30 {
+    background-color: rgba(var(--th-accent-rgb), 0.28) !important;
+    color: var(--th-text) !important;
+    border-color: rgba(var(--th-accent-rgb), 0.65) !important;
+    box-shadow: 0 0 10px rgba(var(--th-accent-rgb), 0.35) !important;
+  }
+}
+
+/* Custom Scrollbars reflecting active theme */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -334,12 +599,11 @@ body:not(.dark) .glazz-card {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 107, 120, 0.25);
+  background-color: rgba(var(--th-accent-rgb), 0.28);
   border-radius: 99px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 107, 120, 0.55);
+  background-color: rgba(var(--th-accent-rgb), 0.65);
 }
-

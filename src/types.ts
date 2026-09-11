@@ -1,5 +1,34 @@
 export type AppMode = 'intro' | 'learn' | 'translate' | 'playground';
 
+export type ThemeId =
+  | 'warm-halo'
+  | 'glacius'
+  | 'nord'
+  | 'dracula'
+  | 'abyss'
+  | 'tokyo-night'
+  | 'ember-glazz'
+  | 'aether-core';
+
+export interface ThemeOption {
+  id: ThemeId;
+  name: string;
+  category: 'Custom Style' | 'VSCode Classic';
+  tagline: string;
+  sourceLabel: string;
+  sourceUrl?: string;
+  palette: {
+    primary: string;       // Primary accent (hex)
+    secondary: string;     // Secondary highlight (hex)
+    background: string;    // Main dark bg (hex)
+    panel: string;         // Glass panel background
+    border: string;        // Panel border
+    text: string;          // Primary text
+    glow: string;          // Glow shadow color
+  };
+  sampleCode: string;
+}
+
 export interface TestCase {
   id: string;
   text: string;

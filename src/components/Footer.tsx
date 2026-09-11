@@ -1,6 +1,7 @@
 import React from 'react';
-import { AppMode } from '../types';
-import { Sparkles, BookOpen, GraduationCap, ArrowLeftRight, Play, Terminal } from 'lucide-react';
+import { AppMode, ThemeId } from '../types';
+import { Sparkles, BookOpen, GraduationCap, ArrowLeftRight, Play, Terminal, Palette } from 'lucide-react';
+import { THEMES } from '../data/themes';
 
 interface FooterProps {
   currentMode: AppMode;
@@ -8,6 +9,8 @@ interface FooterProps {
   isDark: boolean;
   onOpenCheatSheet: () => void;
   completedCount: number;
+  currentTheme?: ThemeId;
+  onOpenThemeSettings?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -15,8 +18,12 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectMode,
   isDark,
   onOpenCheatSheet,
-  completedCount
+  completedCount,
+  currentTheme = 'warm-halo',
+  onOpenThemeSettings
 }) => {
+  const activeThemeObj = THEMES.find((t) => t.id === currentTheme) || THEMES[0];
+
   return (
     <footer
       id="main-app-footer"
@@ -64,14 +71,16 @@ export const Footer: React.FC<FooterProps> = ({
           <Play className="w-4 h-4" />
           <span>Playground</span>
         </button>
-        <button
-          id="mobile-nav-cheatsheet"
-          onClick={onOpenCheatSheet}
-          className="flex flex-col items-center gap-1 p-1 text-[11px] text-neutral-400"
-        >
-          <BookOpen className="w-4 h-4" />
-          <span>Cheat Sheet</span>
-        </button>
+        {onOpenThemeSettings && (
+          <button
+            id="mobile-nav-themes"
+            onClick={onOpenThemeSettings}
+            className="flex flex-col items-center gap-1 p-1 text-[11px] text-neutral-400"
+          >
+            <Palette className="w-4 h-4 text-rose-400" />
+            <span>Themes</span>
+          </button>
+        )}
       </div>
 
       {/* Desktop footer content */}
@@ -87,6 +96,17 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         <div className="flex items-center gap-4">
+          {onOpenThemeSettings && (
+            <button
+              id="footer-theme-settings-btn"
+              onClick={onOpenThemeSettings}
+              className="hover:text-rose-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Palette className="w-3.5 h-3.5 text-rose-400" />
+              <span>Theme: <strong className="text-neutral-200">{activeThemeObj.name}</strong></span>
+            </button>
+          )}
+          <span className="text-neutral-700">&bull;</span>
           <button
             id="footer-cheat-sheet-btn"
             onClick={onOpenCheatSheet}
@@ -95,10 +115,6 @@ export const Footer: React.FC<FooterProps> = ({
             <BookOpen className="w-3.5 h-3.5 text-rose-500" />
             <span>Reference Cheat Sheet</span>
           </button>
-          <span className="text-neutral-700">&bull;</span>
-          <span className="text-neutral-500">
-            Ember-Glazz Edition &bull; Retro Monospace Terminal
-          </span>
         </div>
       </div>
     </footer>

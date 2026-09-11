@@ -1,7 +1,8 @@
 import React from 'react';
-import { AppMode } from '../types';
-import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles } from 'lucide-react';
+import { AppMode, ThemeId } from '../types';
+import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette } from 'lucide-react';
 import { sounds } from '../utils/sound';
+import { THEMES } from '../data/themes';
 
 interface HeaderProps {
   currentMode: AppMode;
@@ -9,6 +10,8 @@ interface HeaderProps {
   completedLessonIds: number[];
   totalLessons: number;
   isDark: boolean;
+  currentTheme?: ThemeId;
+  onOpenThemeSettings?: () => void;
   onToggleTheme: () => void;
   onOpenCheatSheet: () => void;
 }
@@ -38,11 +41,14 @@ export const Header: React.FC<HeaderProps> = ({
   completedLessonIds,
   totalLessons,
   isDark,
+  currentTheme = 'warm-halo',
+  onOpenThemeSettings,
   onToggleTheme,
   onOpenCheatSheet
 }) => {
   const [soundEnabled, setSoundEnabled] = React.useState(sounds.isEnabled());
   const belt = getBeltInfo(completedLessonIds.length, totalLessons);
+  const activeThemeObj = THEMES.find((t) => t.id === currentTheme) || THEMES[0];
 
   const handleToggleSound = () => {
     const next = sounds.toggle();
@@ -75,12 +81,20 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-base tracking-tight font-mono">Regex<span className="text-rose-500 text-glow-crimson">Dojo</span></span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-semibold border border-rose-500/40">
-                  EMBER-GLAZZ
+                <span
+                  id="header-active-theme-badge"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenThemeSettings?.();
+                  }}
+                  title="Click to open theme settings"
+                  className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-semibold border border-rose-500/40 uppercase hover:bg-rose-500/30 transition-all cursor-pointer"
+                >
+                  {activeThemeObj.name}
                 </span>
               </div>
               <p className="text-[10px] tracking-tight leading-none hidden sm:block text-neutral-400">
-                Frosted glass &bull; Crimson terminal
+                Frosted glass &bull; Multi-theme terminal
               </p>
             </div>
           </button>
@@ -125,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="belt-rank-badge"
             onClick={() => onSelectMode('learn')}
             title="Your current rank in RegexDojo. Complete all 12 lessons to earn the Ember Sensei rank!"
-            className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-md transition-all hover:opacity-95 ${belt.color}`}
+            className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-md transition-all hover:opacity-95 cursor-pointer ${belt.color}`}
           >
             <span className={`w-2 h-2 rounded-full animate-pulse ${belt.dotColor}`} />
             <span className="hidden sm:inline font-semibold">{belt.name}</span>
@@ -135,12 +149,27 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </button>
 
+          {/* Theme Settings Button */}
+          {onOpenThemeSettings && (
+            <button
+              id="theme-settings-header-btn"
+              onClick={onOpenThemeSettings}
+              title={`Theme: ${activeThemeObj.name}. Click to change theme.`}
+              className="px-2.5 py-1.5 rounded-lg border border-rose-500/35 bg-black/40 hover:bg-rose-500/15 text-neutral-200 hover:text-white text-xs font-medium flex items-center gap-1.5 backdrop-blur-md transition-all cursor-pointer shadow-xs"
+            >
+              <Palette className="w-4 h-4 text-rose-400" />
+              <span className="hidden sm:inline font-mono text-[11px] uppercase tracking-wide">
+                Themes
+              </span>
+            </button>
+          )}
+
           {/* Quick Cheat Sheet button */}
           <button
             id="open-cheatsheet-header-btn"
             onClick={onOpenCheatSheet}
             title="Open Quick Reference Cheat Sheet"
-            className="p-2 rounded-lg border border-white/10 bg-black/40 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 backdrop-blur-md transition-all"
+            className="p-2 rounded-lg border border-white/10 bg-black/40 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 backdrop-blur-md transition-all cursor-pointer"
           >
             <BookOpen className="w-4 h-4 text-rose-400" />
             <span className="hidden lg:inline">Cheat Sheet</span>
@@ -151,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="toggle-sound-btn"
             onClick={handleToggleSound}
             title={soundEnabled ? 'Sound Effects Active' : 'Sound Effects Muted'}
-            className={`p-2 rounded-lg border backdrop-blur-md transition-colors ${
+            className={`p-2 rounded-lg border backdrop-blur-md transition-colors cursor-pointer ${
               soundEnabled
                 ? 'border-rose-500/40 text-rose-400 bg-rose-500/15 shadow-[0_0_10px_rgba(239,35,60,0.2)]'
                 : 'border-white/10 text-neutral-400 hover:text-neutral-200 bg-black/40'
@@ -165,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
             id="toggle-theme-btn"
             onClick={onToggleTheme}
             title={isDark ? 'Dark frosted glass active' : 'Light glass mode'}
-            className="p-2 rounded-lg border border-white/10 bg-black/40 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors backdrop-blur-md"
+            className="p-2 rounded-lg border border-white/10 bg-black/40 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors backdrop-blur-md cursor-pointer"
           >
             {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-300" />}
           </button>

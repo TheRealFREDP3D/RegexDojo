@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { AppMode } from './types';
+import { AppMode, ThemeId } from './types';
 import { BASICS_LESSONS } from './data/lessons';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -13,10 +13,36 @@ import { LearnView } from './components/LearnView';
 import { TranslateView } from './components/TranslateView';
 import { PlaygroundView } from './components/PlaygroundView';
 import { CheatSheetModal } from './components/CheatSheetModal';
+import { ThemeSettingsModal } from './components/ThemeSettingsModal';
 import { sounds } from './utils/sound';
 
 export default function App() {
   // Theme state
+  const [currentTheme, setCurrentTheme] = useState<ThemeId>(() => {
+    try {
+      const saved = localStorage.getItem('regexdojo_theme_id');
+      if (saved === 'warm-halo' || saved === 'ember-glazz') {
+        return 'warm-halo';
+      }
+      if (saved === 'glacius' || saved === 'aether-core') {
+        return 'glacius';
+      }
+      if (
+        saved === 'nord' ||
+        saved === 'dracula' ||
+        saved === 'abyss' ||
+        saved === 'tokyo-night'
+      ) {
+        return saved;
+      }
+      return 'warm-halo';
+    } catch {
+      return 'warm-halo';
+    }
+  });
+
+  const [themeModalOpen, setThemeModalOpen] = useState<boolean>(false);
+
   const [isDark, setIsDark] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('regexdojo_theme');
@@ -80,6 +106,16 @@ export default function App() {
   const [playgroundPatternOverride, setPlaygroundPatternOverride] = useState<string | undefined>();
   const [playgroundFlagsOverride, setPlaygroundFlagsOverride] = useState<string | undefined>();
 
+  // Select Theme handler
+  const handleSelectTheme = useCallback((themeId: ThemeId) => {
+    setCurrentTheme(themeId);
+    try {
+      localStorage.setItem('regexdojo_theme_id', themeId);
+    } catch {
+      // ignore
+    }
+  }, []);
+
   // Toggle Theme handler
   const handleToggleTheme = useCallback(() => {
     sounds.playClick();
@@ -94,18 +130,19 @@ export default function App() {
     });
   }, []);
 
-  // Update root html/body classes based on theme
+  // Update root html/body classes and data-theme based on theme
   useEffect(() => {
     const root = document.documentElement;
     const body = document.body;
+    body.setAttribute('data-theme', currentTheme);
     if (isDark) {
       root.classList.add('dark');
-      body.className = 'dark text-[#e9e6e8] min-h-screen antialiased selection:bg-[#ff4f63]/35 selection:text-[#ffb3bc]';
+      body.classList.add('dark');
     } else {
       root.classList.remove('dark');
-      body.className = 'text-[#1d1a1c] min-h-screen antialiased selection:bg-[#c8142c]/25 selection:text-[#9e0b1f]';
+      body.classList.remove('dark');
     }
-  }, [isDark]);
+  }, [isDark, currentTheme]);
 
   // Mode change handler
   const handleSelectMode = useCallback((mode: AppMode) => {
@@ -186,14 +223,10 @@ export default function App() {
   }, [handleSelectMode]);
 
   return (
-    <div className="relative flex flex-col min-h-screen pb-16 md:pb-0 overflow-x-hidden bg-[#09070c] text-neutral-100 selection:bg-rose-500/40 selection:text-rose-100">
-      {/* Ambient Ember-Glazz Glows & Glass Grid */}
+    <div className="relative flex flex-col min-h-screen pb-16 md:pb-0 overflow-x-hidden selection:bg-rose-500/40 selection:text-rose-100">
+      {/* Ambient Radial Mesh & Glass Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-[30rem] h-[30rem] rounded-full bg-rose-600/12 blur-[130px]" />
-        <div className="absolute top-1/3 -right-40 w-[28rem] h-[28rem] rounded-full bg-amber-600/10 blur-[140px]" />
-        <div className="absolute -bottom-40 left-1/4 w-[36rem] h-[36rem] rounded-full bg-red-700/10 blur-[150px]" />
-        {/* Subtle glass grid texture */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -204,6 +237,11 @@ export default function App() {
           completedLessonIds={completedLessonIds}
           totalLessons={BASICS_LESSONS.length}
           isDark={isDark}
+          currentTheme={currentTheme}
+          onOpenThemeSettings={() => {
+            sounds.playClick();
+            setThemeModalOpen(true);
+          }}
           onToggleTheme={handleToggleTheme}
           onOpenCheatSheet={() => {
             sounds.playClick();
@@ -254,6 +292,11 @@ export default function App() {
         currentMode={currentMode}
         onSelectMode={handleSelectMode}
         isDark={isDark}
+        currentTheme={currentTheme}
+        onOpenThemeSettings={() => {
+          sounds.playClick();
+          setThemeModalOpen(true);
+        }}
         onOpenCheatSheet={() => {
           sounds.playClick();
           setCheatSheetOpen(true);
@@ -266,6 +309,14 @@ export default function App() {
         isOpen={cheatSheetOpen}
         onClose={() => setCheatSheetOpen(false)}
         isDark={isDark}
+      />
+
+      {/* Visual Theme Settings Modal */}
+      <ThemeSettingsModal
+        isOpen={themeModalOpen}
+        onClose={() => setThemeModalOpen(false)}
+        currentTheme={currentTheme}
+        onSelectTheme={handleSelectTheme}
       />
       </div>
     </div>

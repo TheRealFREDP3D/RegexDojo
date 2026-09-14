@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { AppMode } from '../types';
+import { TOTAL_LESSONS } from '../config/constants';
+import { BASICS_LESSONS } from '../data/lessons';
 import {
   Terminal,
   ShieldAlert,
@@ -38,18 +40,36 @@ export const IntroView: React.FC<IntroViewProps> = ({
 
   const handleStartLesson1 = () => {
     sounds.playClick();
-    if (onSelectLesson) onSelectLesson(1);
+    if (onSelectLesson) onSelectLesson(BASICS_LESSONS[0].id);
     onSelectMode('learn');
   };
 
-  const belts = [
-    { title: 'White Belt', lessons: 'Lessons 1–2', desc: 'Literals and the all-consuming Dot' },
-    { title: 'Yellow Belt', lessons: 'Lessons 3–4', desc: 'Anchors and Custom Character Sets' },
-    { title: 'Green Belt', lessons: 'Lessons 5–6', desc: 'Shorthands and Classic Quantifiers' },
-    { title: 'Blue Belt', lessons: 'Lessons 7–8', desc: 'Bounded Counts and Capturing Groups' },
-    { title: 'Brown Belt', lessons: 'Lessons 9–10', desc: 'Alternation and Word Boundaries' },
-    { title: 'Regex Sensei', lessons: 'Lessons 11–12', desc: 'Lookaround Ninjas and Capstone Email' },
-  ];
+  // Derive each belt card's lesson-number range from the actual data,
+  // grouped by consecutive lessons sharing the same beltTier.
+  const lessonNumberOf = (id: number) => {
+    const idx = BASICS_LESSONS.findIndex((l) => l.id === id);
+    return idx >= 0 ? idx + 1 : idx;
+  };
+  const belts = (() => {
+    const groups: { title: string; first: number; last: number; desc: string }[] = [];
+    for (const lesson of BASICS_LESSONS) {
+      const last = groups[groups.length - 1];
+      if (last && last.title === lesson.beltTier) {
+        last.last = lessonNumberOf(lesson.id);
+      } else {
+        groups.push({
+          title: lesson.beltTier,
+          first: lessonNumberOf(lesson.id),
+          last: lessonNumberOf(lesson.id),
+          desc: lesson.title
+        });
+      }
+    }
+    return groups.map((g) => ({
+      ...g,
+      lessons: g.first === g.last ? `Lesson ${g.first}` : `Lessons ${g.first}–${g.last}`
+    }));
+  })();
 
   // Live Demystifier evaluation
   const demoRegex = /^user_[a-z0-9]{3,8}$/;
@@ -542,11 +562,11 @@ export const IntroView: React.FC<IntroViewProps> = ({
               <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity text-rose-400" />
             </h3>
             <p className="text-xs sm:text-sm leading-relaxed text-neutral-300">
-              12 progressive, step-by-step interactive lessons. Each trial gives you real-time verdicts on positive and negative test cases with hints and solutions.
+              {TOTAL_LESSONS} progressive, step-by-step interactive lessons. Each trial gives you real-time verdicts on positive and negative test cases with hints and solutions.
             </p>
             <div className="mt-4 pt-4 border-t border-rose-500/20 flex items-center justify-between text-xs font-mono text-rose-400">
               <span>The Basics Block</span>
-              <span>12 Lessons</span>
+              <span>{TOTAL_LESSONS} Lessons</span>
             </div>
           </div>
 
@@ -607,7 +627,7 @@ export const IntroView: React.FC<IntroViewProps> = ({
           <div>
             <h3 className="text-base font-bold heading-bar-h4 text-neutral-100">The Dojo Belt System</h3>
             <p className="text-xs text-neutral-400">
-              Work through the 12 challenges to earn the coveted Ember Sensei rank
+              Work through the {TOTAL_LESSONS} challenges to earn the coveted Ember Sensei rank
             </p>
           </div>
           <span className="text-xs font-mono text-rose-400 font-bold text-glow-crimson">

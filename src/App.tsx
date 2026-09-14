@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppMode, ThemeId } from './types';
+import { TOTAL_LESSONS } from './config/constants';
 import { BASICS_LESSONS } from './data/lessons';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -60,6 +61,8 @@ export default function App() {
     try {
       const hash = window.location.hash;
       if (hash.startsWith('#regex=')) {
+        // Consume the hash and clear it after setting initial state
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
         return 'playground';
       }
       const saved = localStorage.getItem('regexdojo_active_mode');
@@ -72,17 +75,17 @@ export default function App() {
     }
   });
 
-  // Selected Lesson state (1..12)
+  // Selected Lesson state (looked up by id; display numbering derives from array order)
   const [selectedLessonId, setSelectedLessonId] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('regexdojo_active_lesson');
       if (saved) {
         const id = parseInt(saved, 10);
-        if (id >= 1 && id <= BASICS_LESSONS.length) return id;
+        if (BASICS_LESSONS.some((l) => l.id === id)) return id;
       }
-      return 1;
+      return BASICS_LESSONS[0].id;
     } catch {
-      return 1;
+      return BASICS_LESSONS[0].id;
     }
   });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AppMode, ThemeId } from '../types';
+import { TOTAL_LESSONS } from '../config/constants';
 import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette } from 'lucide-react';
 import { sounds } from '../utils/sound';
 import { THEMES } from '../data/themes';
@@ -57,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems: { id: AppMode; label: string; badge?: string }[] = [
     { id: 'intro', label: 'Philosophy' },
-    { id: 'learn', label: 'Learn (12 Lessons)', badge: `${completedLessonIds.length}/${totalLessons}` },
+    { id: 'learn', label: `Learn (${TOTAL_LESSONS} Lessons)`, badge: `${completedLessonIds.length}/${totalLessons}` },
     { id: 'translate', label: 'Translate' },
     { id: 'playground', label: 'Playground' }
   ];
@@ -138,12 +139,12 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="belt-rank-badge"
             onClick={() => onSelectMode('learn')}
-            title="Your current rank in RegexDojo. Complete all 12 lessons to earn the Ember Sensei rank!"
+            title={`Your current rank in RegexDojo. Complete all ${TOTAL_LESSONS} lessons to earn the Ember Sensei rank!`}
             className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-md transition-all hover:opacity-95 cursor-pointer ${belt.color}`}
           >
             <span className={`w-2 h-2 rounded-full animate-pulse ${belt.dotColor}`} />
             <span className="hidden sm:inline font-semibold">{belt.name}</span>
-            <span className="sm:hidden font-mono font-bold">{completedLessonIds.length}/12</span>
+            <span className="sm:hidden font-mono font-bold">{completedLessonIds.length}/{TOTAL_LESSONS}</span>
             {completedLessonIds.length === totalLessons && (
               <Sparkles className="w-3.5 h-3.5 text-rose-400" />
             )}

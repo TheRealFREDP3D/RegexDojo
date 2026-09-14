@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Lesson, TestCase } from '../types';
 import { BASICS_LESSONS } from '../data/lessons';
+import { TOTAL_LESSONS } from '../config/constants';
 import { executeRegexMatch, buildHighlightSegments } from '../utils/matcher';
 import { sounds } from '../utils/sound';
 import confetti from 'canvas-confetti';
@@ -27,6 +28,8 @@ interface LearnViewProps {
   isDark: boolean;
 }
 
+const capstoneLesson = BASICS_LESSONS[BASICS_LESSONS.length - 1];
+
 export const LearnView: React.FC<LearnViewProps> = ({
   selectedLessonId,
   onSelectLesson,
@@ -38,6 +41,12 @@ export const LearnView: React.FC<LearnViewProps> = ({
     return BASICS_LESSONS.find((l) => l.id === selectedLessonId) || BASICS_LESSONS[0];
   }, [selectedLessonId]);
 
+  const currentIndex = useMemo(() => {
+    return BASICS_LESSONS.findIndex((l) => l.id === currentLesson.id);
+  }, [currentLesson.id]);
+  const currentNumber = currentIndex + 1;
+  const isCapstone = currentLesson.isCapstone === true || currentLesson.id === capstoneLesson.id;
+
   // User input state
   const [userPattern, setUserPattern] = useState<string>('');
   const [userFlags, setUserFlags] = useState<string>(currentLesson.flags || 'g');
@@ -46,6 +55,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
   const [showSolution, setShowSolution] = useState<boolean>(false);
   const [hasCelebrated, setHasCelebrated] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [previousPattern, setPreviousPattern] = useState<string>('');
 
   // Sync state on lesson change
   useEffect(() => {
@@ -55,6 +65,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
     setShowHint(false);
     setShowSolution(false);
     setHasCelebrated(false);
+    setPreviousPattern('');
   }, [currentLesson.id]);
 
   // Evaluate test cases in real-time
@@ -90,11 +101,19 @@ export const LearnView: React.FC<LearnViewProps> = ({
     return testResults.every((r) => r.passed);
   }, [userPattern, testResults]);
 
+  // Progressive hint and solution gating
+  const hintThreshold = 3; // Show hint after 3 failed attempts
+  const solutionThreshold = 6; // Show solution after 6 failed attempts
+  const canShowHint = attempts >= hintThreshold;
+  const canShowSolution = attempts >= solutionThreshold;
+
   // Handle user input change
   const handlePatternChange = (val: string) => {
     setUserPattern(val);
-    if (val.length > 0 && attempts === 0) {
-      setAttempts(1);
+    // Increment attempts when user makes a meaningful change (not just backspacing to empty)
+    if (val.length > 0 && val !== previousPattern) {
+      setAttempts(prev => prev + 1);
+      setPreviousPattern(val);
     }
   };
 
@@ -104,7 +123,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
       setHasCelebrated(true);
       onMarkLessonCompleted(currentLesson.id);
 
-      if (currentLesson.id === 12) {
+      if (isCapstone) {
         sounds.playMasterFanfare();
         confetti({
           particleCount: 150,
@@ -120,19 +139,21 @@ export const LearnView: React.FC<LearnViewProps> = ({
         });
       }
     }
-  }, [allPassed, hasCelebrated, currentLesson.id, onMarkLessonCompleted]);
+  }, [allPassed, hasCelebrated, currentLesson.id, isCapstone, onMarkLessonCompleted]);
 
   const handleNextLesson = () => {
     sounds.playClick();
-    if (currentLesson.id < BASICS_LESSONS.length) {
-      onSelectLesson(currentLesson.id + 1);
+    const next = BASICS_LESSONS[currentIndex + 1];
+    if (next) {
+      onSelectLesson(next.id);
     }
   };
 
   const handlePrevLesson = () => {
     sounds.playClick();
-    if (currentLesson.id > 1) {
-      onSelectLesson(currentLesson.id - 1);
+    const prev = BASICS_LESSONS[currentIndex - 1];
+    if (prev) {
+      onSelectLesson(prev.id);
     }
   };
 
@@ -140,6 +161,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
     sounds.playClick();
     setUserPattern(currentLesson.solution);
     setShowSolution(true);
+    setPreviousPattern(currentLesson.solution);
   };
 
   const handleReset = () => {
@@ -149,6 +171,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
     setShowHint(false);
     setShowSolution(false);
     setHasCelebrated(false);
+    setPreviousPattern('');
   };
 
   return (
@@ -161,7 +184,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="px-3.5 py-1.5 rounded-lg border border-rose-500/30 bg-black/40 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer text-neutral-200"
           >
-            <span>Lesson {currentLesson.id} of 12</span>
+            <span>Lesson {currentNumber} of {TOTAL_LESSONS}</span>
             <ChevronDown className={`w-3.5 h-3.5 transition-transform text-rose-400 ${sidebarOpen ? 'rotate-180' : ''}`} />
           </button>
 
@@ -175,7 +198,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
           <button
             id="prev-lesson-btn"
             onClick={handlePrevLesson}
-            disabled={currentLesson.id === 1}
+            disabled={currentIndex === 0}
             className="p-2 rounded-lg border border-white/10 bg-black/40 text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed text-neutral-300 hover:bg-white/10 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -189,7 +212,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
           <button
             id="next-lesson-btn"
             onClick={handleNextLesson}
-            disabled={currentLesson.id === BASICS_LESSONS.length}
+            disabled={currentIndex === BASICS_LESSONS.length - 1}
             className="p-2 rounded-lg border border-white/10 bg-black/40 text-xs transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed text-neutral-300 hover:bg-white/10 cursor-pointer"
           >
             <span className="hidden sm:inline">Next</span>
@@ -204,7 +227,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
           id="lessons-selector-drawer"
           className="p-4 rounded-2xl glazz-panel border border-rose-500/30 transition-all animate-fade-in grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 shadow-2xl"
         >
-          {BASICS_LESSONS.map((lesson) => {
+          {BASICS_LESSONS.map((lesson, idx) => {
             const isCompleted = completedLessonIds.includes(lesson.id);
             const isSelected = lesson.id === currentLesson.id;
             return (
@@ -224,8 +247,8 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 }`}
               >
                 <div>
-                  <div className="text-[11px] font-mono text-rose-400/80">Lesson {lesson.id}</div>
-                  <div className="text-xs font-medium truncate max-w-[150px]">{lesson.title.replace(/^Lesson \d+:\s*/, '')}</div>
+                  <div className="text-[11px] font-mono text-rose-400/80">Lesson {idx + 1}</div>
+                  <div className="text-xs font-medium truncate max-w-[150px]">{lesson.title}</div>
                 </div>
                 {isCompleted && (
                   <CheckCircle2 className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
@@ -246,7 +269,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
                 {currentLesson.beltTier}
               </span>
               <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight mt-1 heading-bar-h2">
-                {currentLesson.title}
+                Lesson {currentNumber}: {currentLesson.title}
               </h2>
               <p className="text-xs italic mt-2 text-neutral-400">
                 {currentLesson.subtitle}
@@ -338,28 +361,36 @@ export const LearnView: React.FC<LearnViewProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   id="toggle-hint-btn"
-                  onClick={() => setShowHint(!showHint)}
-                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  onClick={() => canShowHint && setShowHint(!showHint)}
+                  disabled={!canShowHint && !showHint}
+                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors ${
                     showHint
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(217,164,65,0.3)]'
-                      : 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(217,164,65,0.3)] cursor-pointer'
+                      : canShowHint
+                      ? 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5 cursor-pointer'
+                      : 'border-white/5 text-neutral-600 cursor-not-allowed opacity-50'
                   }`}
+                  title={canShowHint ? 'Click to show hint' : `Hint available after ${hintThreshold} attempts (${attempts}/${hintThreshold})`}
                 >
                   <HelpCircle className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{showHint ? 'Hide Hint' : 'Need a Hint?'}</span>
+                  <span>{showHint ? 'Hide Hint' : canShowHint ? 'Need a Hint?' : `Hint (${attempts}/${hintThreshold})`}</span>
                 </button>
 
                 <button
                   id="toggle-solution-btn"
-                  onClick={handleApplySolution}
-                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  onClick={() => showSolution ? setShowSolution(false) : handleApplySolution()}
+                  disabled={!canShowSolution && !showSolution}
+                  className={`text-xs px-2.5 py-1 rounded-lg border flex items-center gap-1.5 transition-colors ${
                     showSolution
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_8px_rgba(255,79,99,0.3)]'
-                      : 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
+                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-[0_0_8px_rgba(255,79,99,0.3)] cursor-pointer'
+                      : canShowSolution
+                      ? 'border-white/10 text-neutral-400 hover:text-neutral-200 hover:bg-white/5 cursor-pointer'
+                      : 'border-white/5 text-neutral-600 cursor-not-allowed opacity-50'
                   }`}
+                  title={canShowSolution ? 'Click to show solution' : `Solution available after ${solutionThreshold} attempts (${attempts}/${solutionThreshold})`}
                 >
                   <Eye className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Show Solution</span>
+                  <span>{showSolution ? 'Hide Solution' : canShowSolution ? 'Show Solution' : `Solution (${attempts}/${solutionThreshold})`}</span>
                 </button>
               </div>
 
@@ -380,7 +411,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
             )}
 
             {/* Solution Display */}
-            {showSolution && (
+            {showSolution && canShowSolution && (
               <div
                 id="lesson-solution-box"
                 className="p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/30 text-rose-300 text-xs font-mono flex items-center justify-between animate-fade-in"
@@ -475,22 +506,26 @@ export const LearnView: React.FC<LearnViewProps> = ({
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-rose-300 text-glow-crimson">Trial Conquered!</h4>
+                  <h4 className="text-base font-bold text-rose-300 text-glow-crimson">
+                    {isCapstone
+                      ? 'All Trials Conquered!'
+                      : 'Trial Conquered!'}
+                  </h4>
                   <p className="text-xs text-neutral-300">
-                    {currentLesson.id === 12
-                      ? 'You have completed all 12 trials of The Basics and earned the Ember Sensei rank!'
+                    {isCapstone
+                      ? `You have completed all ${TOTAL_LESSONS} trials of The Basics and earned the Ember Sensei rank!`
                       : 'All test conditions satisfied. Progress committed to memory.'}
                   </p>
                 </div>
               </div>
 
-              {currentLesson.id < BASICS_LESSONS.length && (
+              {currentIndex < BASICS_LESSONS.length - 1 && (
                 <button
                   id="success-next-lesson-btn"
                   onClick={handleNextLesson}
                   className="btn-glazz-cta px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Advance to Lesson {currentLesson.id + 1}</span>
+                  <span>Advance to Lesson {currentNumber + 1}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               )}

@@ -4,16 +4,17 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 1,
     slug: 'literals',
-    title: 'Lesson 1: Literals',
+    title: 'Literals',
     subtitle: 'The polite beginnings before the madness',
     beltTier: 'White Belt',
     theory: [
       'Welcome to the Dojo. Regular expressions are computer science’s ancient pact with the void: a concise language for matching patterns in text. Before we descend into the crypt of cryptic glyphs, we begin with the gentlest concept: literal characters.',
       'A literal character matches itself. If you write the pattern `cat`, the regex engine will look for the exact sequence "c", followed by "a", followed by "t". Case matters by default: `Cat` is not `cat`, and computers have no mercy for sloppy capitalization.',
+      'Literals match substrings, not just whole words. The pattern `cat` will match "cat" inside "category", "caterpillar", or "concatenate" because the engine looks for the sequence anywhere in the text.',
       'Some characters in regex have magical secret identities (like `.`, `*`, `+`, `?`, `^`, `$`, `\`, `[`, `]`, `(`, `)`). If you actually want to match a real dot or question mark, you must disarm it by escaping it with a backslash: `\.` or `\?`.',
-      'For your first trial, prove you can spot a rogue feline in ordinary text.'
+      'For your first trial, prove you can spot the sequence "cat" in ordinary text.'
     ],
-    exercisePrompt: 'Write a regex pattern that matches the literal word "cat". It should match sentences containing "cat", but ignore ones with only "dog" or misspelled versions.',
+    exercisePrompt: 'Write a regex pattern that matches the literal string "cat". It should match sentences containing "cat" as a substring, but ignore ones with only "dog" or misspelled versions.',
     hint: 'Type `cat` into the pattern input. No magic spells required yet.',
     solution: 'cat',
     flags: 'g',
@@ -39,9 +40,9 @@ export const BASICS_LESSONS: Lesson[] = [
       },
       {
         id: '1-4',
-        text: 'Category management is quite boring.',
+        text: 'category management is quite boring.',
         shouldMatch: true,
-        explanation: 'Contains "cat" at the start of "Category" (lowercase "cat" in substring).'
+        explanation: 'Contains "cat" at the start of "category" (lowercase "cat" in substring).'
       },
       {
         id: '1-5',
@@ -60,7 +61,7 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 2,
     slug: 'the-dot',
-    title: 'Lesson 2: The Dot (`.`)',
+    title: 'The Dot (`.`)',
     subtitle: 'The wildcard with virtually no standards',
     beltTier: 'White Belt',
     theory: [
@@ -116,7 +117,7 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 3,
     slug: 'anchors',
-    title: 'Lesson 3: Anchors (`^` and `$`)',
+    title: 'Anchors (`^` and `$`)',
     subtitle: 'Drawing lines in the algorithmic sand',
     beltTier: 'Yellow Belt',
     theory: [
@@ -166,7 +167,7 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 4,
     slug: 'character-classes',
-    title: 'Lesson 4: Character Classes (`[...]`)',
+    title: 'Character Classes (`[...]`)',
     subtitle: 'The VIP list of allowed characters',
     beltTier: 'Yellow Belt',
     theory: [
@@ -216,7 +217,7 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 5,
     slug: 'shorthand-classes',
-    title: 'Lesson 5: Shorthand Classes (`\\d`, `\\w`, `\\s`)',
+    title: 'Shorthand Classes (`\\d`, `\\w`, `\\s`)',
     subtitle: 'Typing less, suffering slightly less',
     beltTier: 'Green Belt',
     theory: [
@@ -266,7 +267,7 @@ export const BASICS_LESSONS: Lesson[] = [
   {
     id: 6,
     slug: 'quantifiers',
-    title: 'Lesson 6: Quantifiers (`*`, `+`, `?`)',
+    title: 'Quantifiers (`*`, `+`, `?`)',
     subtitle: 'How much is that in dog iterations?',
     beltTier: 'Green Belt',
     theory: [
@@ -315,8 +316,64 @@ export const BASICS_LESSONS: Lesson[] = [
   },
   {
     id: 7,
+    slug: 'greedy-vs-lazy',
+    title: 'Greedy vs Lazy Quantifiers',
+    subtitle: 'The art of restraint in a gluttonous world',
+    beltTier: 'Green Belt',
+    theory: [
+      'By default, quantifiers are greedy: they devour as many characters as possible before surrendering anything. The pattern `a+` on "aaaaa" matches all five "a"s because greed is the default state.',
+      'Sometimes you want minimal matching instead. Add a question mark `?` after any quantifier to make it lazy: `a+?` now matches only one "a", then stops.',
+      'This distinction matters most when you\'re matching delimited content. Greedy `<.+>` on "<div>hello</div>" swallows everything from the first `<` to the final `>`. Lazy `<.+?>` stops at the first `>`.',
+      'Your trial: match the shortest possible text between quote marks.'
+    ],
+    exercisePrompt: 'Match the shortest possible content between double quotes, including empty quotes. Use lazy quantifiers to stop at the first closing quote.',
+    hint: 'Use a lazy quantifier that allows zero characters: `".*?"` matches the shortest text between quotes (even `""`).',
+    solution: '".*?"',
+    flags: 'g',
+    tip: 'Greedy is usually what you want, but lazy is your weapon against over-matching in HTML, JSON, or any structured text.',
+    testCases: [
+      {
+        id: '7-1',
+        text: 'He said "hello" to her.',
+        shouldMatch: true,
+        explanation: 'Matches "hello" - the shortest content between quotes.'
+      },
+      {
+        id: '7-2',
+        text: 'The file "data.txt" was processed.',
+        shouldMatch: true,
+        explanation: 'Matches "data.txt" - shortest quoted string.'
+      },
+      {
+        id: '7-3',
+        text: 'She shouted "stop!" and ran.',
+        shouldMatch: true,
+        explanation: 'Matches "stop!" - shortest quoted text with punctuation.'
+      },
+      {
+        id: '7-4',
+        text: 'Message: "first" then "second" end.',
+        shouldMatch: true,
+        explanation: 'Lazy quantifier matches "first" separately from "second".'
+      },
+      {
+        id: '7-5',
+        text: 'No quotes here.',
+        shouldMatch: false,
+        explanation: 'No double quotes present to match.'
+      },
+      {
+        id: '7-6',
+        text: 'Empty quotes "" should match.',
+        shouldMatch: true,
+        explanation: 'The `*` in the lazy `.*?` allows zero characters, so even empty quotes `""` match.'
+      }
+    ]
+  },
+  {
+    id: 8,
     slug: 'bounded-quantifiers',
-    title: 'Lesson 7: Bounded Quantifiers (`{n}`, `{n,m}`)',
+    title: 'Bounded Quantifiers (`{n}`, `{n,m}`)',
     subtitle: 'When "some" isn\'t specific enough',
     beltTier: 'Blue Belt',
     theory: [
@@ -332,31 +389,31 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: 'Without anchors `^` and `$`, `\\d{5}` would match the first 5 digits of a 9-digit phone number!',
     testCases: [
       {
-        id: '7-1',
+        id: '8-1',
         text: '90210',
         shouldMatch: true,
         explanation: 'Exactly 5 digits.'
       },
       {
-        id: '7-2',
+        id: '8-2',
         text: '10001',
         shouldMatch: true,
         explanation: 'Exactly 5 digits.'
       },
       {
-        id: '7-3',
+        id: '8-3',
         text: '1234',
         shouldMatch: false,
         explanation: 'Only 4 digits; requires exactly 5.'
       },
       {
-        id: '7-4',
+        id: '8-4',
         text: '123456',
         shouldMatch: false,
         explanation: '6 digits; too long.'
       },
       {
-        id: '7-5',
+        id: '8-5',
         text: '9021A',
         shouldMatch: false,
         explanation: 'Contains a non-digit letter.'
@@ -364,9 +421,9 @@ export const BASICS_LESSONS: Lesson[] = [
     ]
   },
   {
-    id: 8,
+    id: 9,
     slug: 'groups',
-    title: 'Lesson 8: Capturing Groups (`()`)',
+    title: 'Capturing Groups (`()`)',
     subtitle: 'Herding your expressions into neat corrals',
     beltTier: 'Blue Belt',
     theory: [
@@ -382,31 +439,31 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: 'Numbered capture groups allow you to perform powerful search-and-replace transformations in any programming language.',
     testCases: [
       {
-        id: '8-1',
+        id: '9-1',
         text: 'ha',
         shouldMatch: true,
         explanation: 'One repetition of "ha".'
       },
       {
-        id: '8-2',
+        id: '9-2',
         text: 'haha',
         shouldMatch: true,
         explanation: 'Two repetitions of "ha".'
       },
       {
-        id: '8-3',
+        id: '9-3',
         text: 'hahahaha',
         shouldMatch: true,
         explanation: 'Four repetitions of "ha".'
       },
       {
-        id: '8-4',
+        id: '9-4',
         text: 'hah',
         shouldMatch: false,
         explanation: 'Ends abruptly on "h" without the trailing "a".'
       },
       {
-        id: '8-5',
+        id: '9-5',
         text: 'ah',
         shouldMatch: false,
         explanation: 'Characters in wrong order.'
@@ -414,9 +471,9 @@ export const BASICS_LESSONS: Lesson[] = [
     ]
   },
   {
-    id: 9,
+    id: 10,
     slug: 'alternation',
-    title: 'Lesson 9: Alternation (`|`)',
+    title: 'Alternation (`|`)',
     subtitle: 'The logical OR: choosing your poison',
     beltTier: 'Brown Belt',
     theory: [
@@ -432,31 +489,31 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: 'Alternation checks choices from left to right. If the first choice matches, the engine stops looking!',
     testCases: [
       {
-        id: '9-1',
+        id: '10-1',
         text: 'Hello Alice',
         shouldMatch: true,
         explanation: 'Starts with "Hello " followed by word chars.'
       },
       {
-        id: '9-2',
+        id: '10-2',
         text: 'Hi Bob',
         shouldMatch: true,
         explanation: 'Starts with "Hi " followed by word chars.'
       },
       {
-        id: '9-3',
+        id: '10-3',
         text: 'Hey Charlie',
         shouldMatch: false,
         explanation: '"Hey" is neither "Hello" nor "Hi".'
       },
       {
-        id: '9-4',
+        id: '10-4',
         text: 'Greetings Dave',
         shouldMatch: false,
         explanation: 'Not one of the allowed greetings.'
       },
       {
-        id: '9-5',
+        id: '10-5',
         text: 'Hello ',
         shouldMatch: false,
         explanation: 'Missing the name after the greeting.'
@@ -464,9 +521,9 @@ export const BASICS_LESSONS: Lesson[] = [
     ]
   },
   {
-    id: 10,
+    id: 11,
     slug: 'word-boundaries',
-    title: 'Lesson 10: Word Boundaries (`\\b`)',
+    title: 'Word Boundaries (`\\b`)',
     subtitle: 'Stopping your patterns from swallowing innocent bystanders',
     beltTier: 'Brown Belt',
     theory: [
@@ -482,31 +539,31 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: '`\\b` is not a character; it is a zero-width checkpoint inspecting whether adjacent characters cross between word and non-word territory.',
     testCases: [
       {
-        id: '10-1',
+        id: '11-1',
         text: 'Do you have a plan?',
         shouldMatch: true,
         explanation: '"plan" is preceded by space and followed by question mark (both non-word).'
       },
       {
-        id: '10-2',
+        id: '11-2',
         text: 'The plan was simple.',
         shouldMatch: true,
         explanation: '"plan" is a standalone word.'
       },
       {
-        id: '10-3',
+        id: '11-3',
         text: 'Earth is a giant planet.',
         shouldMatch: false,
         explanation: '"planet" contains "plan", but has no word boundary after "n".'
       },
       {
-        id: '10-4',
+        id: '11-4',
         text: 'We board the airplane at noon.',
         shouldMatch: false,
         explanation: '"airplane" contains "plan" inside, so no boundary at start.'
       },
       {
-        id: '10-5',
+        id: '11-5',
         text: 'They are currently planning.',
         shouldMatch: false,
         explanation: 'Contains "plan" but does not end on a boundary.'
@@ -514,9 +571,9 @@ export const BASICS_LESSONS: Lesson[] = [
     ]
   },
   {
-    id: 11,
+    id: 12,
     slug: 'lookarounds',
-    title: 'Lesson 11: Lookarounds',
+    title: 'Lookarounds',
     subtitle: 'The ninjas of regex: checking without consuming',
     beltTier: 'Black Belt Candidate',
     theory: [
@@ -532,31 +589,31 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: 'Because lookarounds are zero-width, you can stack them! This is how complex password rules (at least 1 digit, 1 symbol, etc.) are written.',
     testCases: [
       {
-        id: '11-1',
+        id: '12-1',
         text: 'The ticket costs $45 today.',
         shouldMatch: true,
         explanation: 'Matches "45" because it is preceded by "$".'
       },
       {
-        id: '11-2',
+        id: '12-2',
         text: 'Total bill: $120 plus tax.',
         shouldMatch: true,
         explanation: 'Matches "120" preceded by "$".'
       },
       {
-        id: '11-3',
+        id: '12-3',
         text: 'He bought 45 apples at the market.',
         shouldMatch: false,
         explanation: '"45" is preceded by a space, not a dollar sign.'
       },
       {
-        id: '11-4',
+        id: '12-4',
         text: 'Room 120 is on the first floor.',
         shouldMatch: false,
         explanation: 'No dollar sign before "120".'
       },
       {
-        id: '11-5',
+        id: '12-5',
         text: 'Price is €45 euros.',
         shouldMatch: false,
         explanation: 'Preceded by euro symbol, not dollar sign.'
@@ -564,11 +621,12 @@ export const BASICS_LESSONS: Lesson[] = [
     ]
   },
   {
-    id: 12,
+    id: 13,
     slug: 'capstone-email',
-    title: 'Lesson 12: Capstone (Email & The Illusion of Perfection)',
+    title: 'Capstone (Email & The Illusion of Perfection)',
     subtitle: 'The final trial: embracing the limits of the craft',
     beltTier: 'Regex Sensei',
+    isCapstone: true,
     theory: [
       'Congratulations, warrior. You have reached the pinnacle of the basics. To test your collective mastery, we arrive at the rite of passage that has driven thousands of engineers to despair: email validation.',
       'The official RFC 5322 specification for email addresses is an ungodly 6,000-character monstrosity supporting IP literals, quoted strings with spaces, comments inside parentheses, and bizarre edge cases. Trying to write a "100% complete" email regex is a fool’s errand.',
@@ -582,43 +640,43 @@ export const BASICS_LESSONS: Lesson[] = [
     tip: 'Real-world wisdom: The best way to validate an email in production is to check if it looks roughly plausible, and then send a confirmation link. The network does what regex cannot.',
     testCases: [
       {
-        id: '12-1',
+        id: '13-1',
         text: 'sensei@regexdojo.dev',
         shouldMatch: true,
         explanation: 'Valid standard email with letters and dot.'
       },
       {
-        id: '12-2',
+        id: '13-2',
         text: 'coder.hero+test@gmail.com',
         shouldMatch: true,
         explanation: 'Valid email with dots and plus tagging.'
       },
       {
-        id: '12-3',
+        id: '13-3',
         text: 'student42@sub.domain.org',
         shouldMatch: true,
         explanation: 'Valid subdomain email.'
       },
       {
-        id: '12-4',
+        id: '13-4',
         text: 'plainaddress',
         shouldMatch: false,
         explanation: 'Missing @ and domain.'
       },
       {
-        id: '12-5',
+        id: '13-5',
         text: '@missingusername.com',
         shouldMatch: false,
         explanation: 'No username before the @.'
       },
       {
-        id: '12-6',
+        id: '13-6',
         text: 'user@domain',
         shouldMatch: false,
         explanation: 'Missing top-level domain (.com, etc).'
       },
       {
-        id: '12-7',
+        id: '13-7',
         text: 'user@domain.c',
         shouldMatch: false,
         explanation: 'TLD must have at least 2 characters.'

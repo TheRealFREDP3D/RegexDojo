@@ -42,6 +42,7 @@ export interface Lesson {
   title: string;
   subtitle: string;
   beltTier: string;
+  isCapstone?: boolean;
   theory: string[]; // 2-4 paragraphs with dark humor & clear pedagogy
   hint: string;
   solution: string;

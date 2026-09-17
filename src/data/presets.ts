@@ -92,7 +92,7 @@ Name: Grace Hopper | Email: grace.hopper@navy.mil | Phone: 703-555-0177 | Role: 
     content: `// Regular expression matching engine
 import { useState, useEffect } from 'react';
 
-const API_KEY = "sk_live_992184918234"; // Do not commit secrets!
+const API_KEY = "sk_live_example_placeholder_0000000000"; // Demo fixture only — never a real key
 const MAX_RETRIES = 5;
 
 export function compilePattern(rawInput: string, flags: string = 'g'): RegExp | null {

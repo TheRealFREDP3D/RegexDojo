@@ -1,8 +1,17 @@
 import { RegexMatchDetail, MatchHighlightSegment } from '../types';
+import { decodeRegexError } from '../data/errors';
+
+export interface RegexErrorDetails {
+  raw: string;
+  friendly: string;
+  title: string;
+  likelyFix: string;
+}
 
 export interface ExecuteMatchResult {
   isValid: boolean;
   error?: string;
+  errorDetails?: RegexErrorDetails;
   matches: RegexMatchDetail[];
   totalMatches: number;
   totalCharsMatched: number;
@@ -106,9 +115,24 @@ export function executeRegexMatch(
     };
   } catch (err: unknown) {
     const endTime = performance.now();
+    const raw = (err as Error).message || 'Invalid regular expression.';
+    const decoded = decodeRegexError(raw);
     return {
       isValid: false,
-      error: (err as Error).message || 'Invalid regular expression.',
+      error: decoded ? decoded.friendly : raw,
+      errorDetails: decoded
+        ? {
+            raw,
+            friendly: decoded.friendly,
+            title: decoded.title,
+            likelyFix: decoded.likelyFix
+          }
+        : {
+            raw,
+            friendly: raw,
+            title: 'Regex Syntax Error',
+            likelyFix: 'Check your pattern for typos, unbalanced brackets, or invalid escapes.'
+          },
       matches: [],
       totalMatches: 0,
       totalCharsMatched: 0,

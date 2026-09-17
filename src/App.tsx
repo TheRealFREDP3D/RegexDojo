@@ -17,6 +17,9 @@ import { CheatSheetModal } from './components/CheatSheetModal';
 import { ThemeSettingsModal } from './components/ThemeSettingsModal';
 import { sounds } from './utils/sound';
 
+/** Tri-state theme preference: 'system' follows the OS, otherwise explicit dark/light. */
+type ThemePreference = 'system' | 'dark' | 'light';
+
 export default function App() {
   // Theme state
   const [currentTheme, setCurrentTheme] = useState<ThemeId>(() => {
@@ -44,16 +47,25 @@ export default function App() {
 
   const [themeModalOpen, setThemeModalOpen] = useState<boolean>(false);
 
-  const [isDark, setIsDark] = useState<boolean>(() => {
+  // Tri-state theme preference: 'system' | 'dark' | 'light'
+  const [themePreference, setThemePreference] = useState<ThemePreference>(() => {
     try {
-      const saved = localStorage.getItem('regexdojo_theme');
-      if (saved !== null) {
-        return saved === 'dark';
+      const saved = localStorage.getItem('regexdojo_theme_preference');
+      if (saved === 'system' || saved === 'dark' || saved === 'light') {
+        return saved;
       }
-      return true; // default dark dojo theme
+      return 'system'; // default: follow the operating system
     } catch {
-      return true;
+      return 'system';
     }
+  });
+
+  // Effective dark/light state, derived from the preference (and the OS when 'system').
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true;
+    if (themePreference === 'dark') return true;
+    if (themePreference === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   // Mode state
@@ -119,13 +131,16 @@ export default function App() {
     }
   }, []);
 
-  // Toggle Theme handler
+  // Toggle Theme handler (cycles through system -> dark -> light -> system)
   const handleToggleTheme = useCallback(() => {
     sounds.playClick();
-    setIsDark((prev) => {
-      const next = !prev;
+    setThemePreference((prev) => {
+      let next: ThemePreference;
+      if (prev === 'system') next = 'dark';
+      else if (prev === 'dark') next = 'light';
+      else next = 'system';
       try {
-        localStorage.setItem('regexdojo_theme', next ? 'dark' : 'light');
+        localStorage.setItem('regexdojo_theme_preference', next);
       } catch {
         // ignore
       }
@@ -146,6 +161,19 @@ export default function App() {
       body.classList.remove('dark');
     }
   }, [isDark, currentTheme]);
+
+  // Resolve the effective dark/light value from the preference, subscribing to OS
+  // changes while the user has not made an explicit choice.
+  useEffect(() => {
+    if (themePreference === 'system') {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      setIsDark(mq.matches);
+      const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
+      mq.addEventListener('change', listener);
+      return () => mq.removeEventListener('change', listener);
+    }
+    setIsDark(themePreference === 'dark');
+  }, [themePreference]);
 
   // Mode change handler
   const handleSelectMode = useCallback((mode: AppMode) => {
@@ -227,6 +255,14 @@ export default function App() {
 
   return (
     <div className="relative flex flex-col min-h-screen pb-16 md:pb-0 overflow-x-hidden selection:bg-rose-500/40 selection:text-rose-100">
+      {/* Skip-to-content link (hidden until focused) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-3.5 focus:py-1.5 focus:rounded-xl focus:bg-rose-500 focus:text-white focus:font-bold focus:shadow-lg focus:outline-none"
+      >
+        Skip to main content
+      </a>
+
       {/* Ambient Radial Mesh & Glass Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
@@ -253,7 +289,7 @@ export default function App() {
         />
 
         {/* Main View Area */}
-        <main className="flex-1">
+        <main id="main-content" className="flex-1">
         {currentMode === 'intro' && (
           <IntroView
             onSelectMode={handleSelectMode}
@@ -319,7 +355,12 @@ export default function App() {
         isOpen={themeModalOpen}
         onClose={() => setThemeModalOpen(false)}
         currentTheme={currentTheme}
+        themePreference={themePreference}
         onSelectTheme={handleSelectTheme}
+        onSetPreference={(pref) => {
+          sounds.playClick();
+          setThemePreference(pref);
+        }}
       />
       </div>
     </div>

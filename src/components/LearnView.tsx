@@ -20,6 +20,11 @@ import {
   Info
 } from 'lucide-react';
 
+const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
 interface LearnViewProps {
   selectedLessonId: number;
   onSelectLesson: (id: number) => void;
@@ -46,6 +51,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
   }, [currentLesson.id]);
   const currentNumber = currentIndex + 1;
   const isCapstone = currentLesson.isCapstone === true || currentLesson.id === capstoneLesson.id;
+  const progressPct = TOTAL_LESSONS > 0 ? Math.round((completedLessonIds.length / TOTAL_LESSONS) * 100) : 0;
 
   // User input state
   const [userPattern, setUserPattern] = useState<string>('');
@@ -125,18 +131,22 @@ export const LearnView: React.FC<LearnViewProps> = ({
 
       if (isCapstone) {
         sounds.playMasterFanfare();
-        confetti({
-          particleCount: 150,
-          spread: 80,
-          origin: { y: 0.6 }
-        });
+        if (!PREFERS_REDUCED_MOTION) {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 }
+          });
+        }
       } else {
         sounds.playPassChime();
-        confetti({
-          particleCount: 70,
-          spread: 60,
-          origin: { y: 0.7 }
-        });
+        if (!PREFERS_REDUCED_MOTION) {
+          confetti({
+            particleCount: 70,
+            spread: 60,
+            origin: { y: 0.7 }
+          });
+        }
       }
     }
   }, [allPassed, hasCelebrated, currentLesson.id, isCapstone, onMarkLessonCompleted]);
@@ -178,20 +188,41 @@ export const LearnView: React.FC<LearnViewProps> = ({
     <div id="learn-view-container" className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* Top Bar: Lesson Title & Navigation controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-rose-500/20">
-        <div className="flex items-center gap-3">
-          <button
-            id="toggle-lesson-sidebar-btn"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="px-3.5 py-1.5 rounded-lg border border-rose-500/30 bg-black/40 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer text-neutral-200"
-          >
-            <span>Lesson {currentNumber} of {TOTAL_LESSONS}</span>
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform text-rose-400 ${sidebarOpen ? 'rotate-180' : ''}`} />
-          </button>
+<div className="flex items-center gap-3">
+            <button
+              id="toggle-lesson-sidebar-btn"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="px-3.5 py-1.5 rounded-lg border border-rose-500/30 bg-black/40 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer text-neutral-200"
+            >
+              <span>Lesson {currentNumber} of {TOTAL_LESSONS}</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform text-rose-400 ${sidebarOpen ? 'rotate-180' : ''}`} />
+            </button>
 
-          <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_8px_rgba(255,79,99,0.2)]">
-            {currentLesson.beltTier}
-          </span>
-        </div>
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_8px_rgba(255,79,99,0.2)]">
+              {currentLesson.beltTier}
+            </span>
+          </div>
+
+          <div className="flex flex-col items-end gap-1.5">
+            <div className="flex items-center gap-2 text-[10px] font-mono text-rose-400 font-bold">
+              <span>Dojo Progress</span>
+              <span>{completedLessonIds.length}/{TOTAL_LESSONS}</span>
+              <span className="text-neutral-500">({progressPct}%)</span>
+            </div>
+            <div
+              id="learn-progress-bar"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={progressPct}
+              className="w-32 sm:w-44 h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden"
+            >
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-rose-500 to-amber-500 transition-all duration-500"
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
+          </div>
 
         {/* Next / Previous stepper */}
         <div className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { TRANSLATE_PRESETS } from '../data/presets';
 import { tokenizeRegex } from '../utils/tokenizer';
+import { decodeRegexError } from '../data/errors';
 import { TokenBreakdown } from '../types';
 import { sounds } from '../utils/sound';
 import {
@@ -174,9 +175,25 @@ export const TranslateView: React.FC<TranslateViewProps> = ({
         {!result.isValid && (
           <div className="p-3.5 rounded-xl bg-rose-950/30 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2 animate-fade-in">
             <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <div>
-              <span className="font-bold">Engine Syntax Rejection: </span>
-              <span>{result.error}</span>
+            <div className="space-y-1">
+              {(() => {
+                const decoded = result.error ? decodeRegexError(result.error) : null;
+                return decoded ? (
+                  <>
+                    <div>
+                      <span className="font-bold">{decoded.title}: </span>
+                      <span>{decoded.friendly}</span>
+                    </div>
+                    <p className="text-rose-300/80">
+                      <span className="font-semibold text-rose-200">Likely fix: </span>
+                      {decoded.likelyFix}
+                    </p>
+                  </>
+                ) : (
+                  <span className="font-bold">Engine Syntax Rejection: </span>
+                );
+              })()}
+              <p className="text-[10px] text-neutral-500 font-mono">{result.error}</p>
             </div>
           </div>
         )}

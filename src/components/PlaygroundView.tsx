@@ -22,6 +22,10 @@ interface PlaygroundViewProps {
   isDark: boolean;
 }
 
+const DEFAULT_PATTERN = '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b';
+const DEFAULT_FLAGS = 'g';
+const DEBOUNCE_MS = 200;
+
 export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   initialPattern,
   initialFlags,
@@ -38,9 +42,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
         if (p) return decodeURIComponent(p);
       }
       const saved = localStorage.getItem('regexdojo_pg_pattern');
-      return saved || '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b';
+      return saved || DEFAULT_PATTERN;
     } catch {
-      return '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b';
+      return DEFAULT_PATTERN;
     }
   });
 
@@ -54,9 +58,9 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
         if (f !== null) return f;
       }
       const saved = localStorage.getItem('regexdojo_pg_flags');
-      return saved !== null ? saved : 'g';
+      return saved !== null ? saved : DEFAULT_FLAGS;
     } catch {
-      return 'g';
+      return DEFAULT_FLAGS;
     }
   });
 
@@ -75,6 +79,21 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
   });
 
+  // Debounced copies of the expensive inputs — the regex engine only re-runs
+  // once the user pauses typing, keeping the UI responsive.
+  const [debouncedPattern, setPatternState] = useState<string>(pattern);
+  const [debouncedText, setTextState] = useState<string>(testText);
+
+  // Push debounced values forward after the quiet period.
+  useEffect(() => {
+    const id = setTimeout(() => setPatternState(pattern), DEBOUNCE_MS);
+    return () => clearTimeout(id);
+  }, [pattern]);
+  useEffect(() => {
+    const id = setTimeout(() => setTextState(testText), DEBOUNCE_MS);
+    return () => clearTimeout(id);
+  }, [testText]);
+
   const [copiedPattern, setCopiedPattern] = useState<boolean>(false);
   const [copiedMatches, setCopiedMatches] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -91,15 +110,15 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
   }, [pattern, flags, testText]);
 
-  // Execute regex
+  // Execute regex (driven by debounced inputs so it doesn't recompile per keystroke)
   const matchResult = useMemo(() => {
-    return executeRegexMatch(pattern, flags, testText);
-  }, [pattern, flags, testText]);
+    return executeRegexMatch(debouncedPattern, flags, debouncedText);
+  }, [debouncedPattern, flags, debouncedText]);
 
   // Build segments for visual highlighted rendering
   const segments = useMemo(() => {
-    return buildHighlightSegments(testText, matchResult.matches);
-  }, [testText, matchResult.matches]);
+    return buildHighlightSegments(debouncedText, matchResult.matches);
+  }, [debouncedText, matchResult.matches]);
 
   // Flag toggler
   const toggleFlag = (flagChar: string) => {
@@ -236,6 +255,7 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
                   id={`flag-toggle-${f.key}`}
                   onClick={() => toggleFlag(f.key)}
                   title={`${f.label} (${f.key}): ${f.desc}`}
+                  aria-pressed={isActive}
                   className={`w-7 h-7 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
                     isActive
                       ? 'bg-rose-500 text-white shadow-[0_0_10px_rgba(255,79,99,0.5)]'
@@ -273,12 +293,21 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
           </span>
         </div>
 
-        {!matchResult.isValid && (
+        {!matchResult.isValid && matchResult.errorDetails && (
           <div className="p-3.5 rounded-xl bg-rose-950/30 border border-rose-500/40 text-rose-300 text-xs flex items-start gap-2 animate-fade-in">
             <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-            <div>
-              <span className="font-bold">Regex Syntax Error: </span>
-              <span>{matchResult.error}</span>
+            <div className="space-y-1">
+              <div>
+                <span className="font-bold">{matchResult.errorDetails.title}: </span>
+                <span>{matchResult.errorDetails.friendly}</span>
+              </div>
+              <p className="text-rose-300/80">
+                <span className="font-semibold text-rose-200">Likely fix: </span>
+                {matchResult.errorDetails.likelyFix}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono">
+                Raw engine message: {matchResult.errorDetails.raw}
+              </p>
             </div>
           </div>
         )}

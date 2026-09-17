@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Search, Copy, Check, BookOpen } from 'lucide-react';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface CheatSheetItem {
   token: string;
@@ -61,6 +62,7 @@ export const CheatSheetModal: React.FC<{
   const [search, setSearch] = useState('');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [selectedCat, setSelectedCat] = useState<string>('All');
+  const cardRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -89,6 +91,10 @@ export const CheatSheetModal: React.FC<{
     >
       <div
         id="cheat-sheet-modal-card"
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cheat-sheet-modal-title"
         className="relative w-full max-w-3xl max-h-[85vh] rounded-2xl flex flex-col ember-glass-panel-crimson shadow-2xl overflow-hidden transition-colors text-neutral-100 shadow-rose-950/40"
         onClick={(e) => e.stopPropagation()}
       >
@@ -99,7 +105,7 @@ export const CheatSheetModal: React.FC<{
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight heading-bar-h3 text-neutral-100">Dojo Quick Reference</h2>
+              <h2 id="cheat-sheet-modal-title" className="text-lg font-bold tracking-tight heading-bar-h3 text-neutral-100">Dojo Quick Reference</h2>
               <p className="text-xs text-neutral-400">
                 Emergency regex cheat sheet for the weary developer
               </p>

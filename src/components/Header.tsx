@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppMode, ThemeId } from '../types';
 import { TOTAL_LESSONS } from '../config/constants';
-import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette } from 'lucide-react';
+import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette, BarChart3 } from 'lucide-react';
 import { sounds } from '../utils/sound';
 import { THEMES } from '../data/themes';
 
@@ -63,6 +63,8 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'playground', label: 'Playground' }
   ];
 
+  const progressPct = totalLessons > 0 ? Math.round((completedLessonIds.length / totalLessons) * 100) : 0;
+
   return (
     <header
       id="main-app-header"
@@ -119,13 +121,20 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>{item.label}</span>
                 {item.badge && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-black/30 text-white'
                         : 'bg-rose-950/60 text-rose-300 border border-rose-500/30'
                     }`}
                   >
                     {item.badge}
+                    {item.id === 'learn' && (
+                      <span className="flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+                        <BarChart3 className="w-2.5 h-2.5" />
+                        <span className="text-[9px] font-bold">{progressPct}%</span>
+                      </span>
+                    )}
                   </span>
                 )}
               </button>

@@ -1,34 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { X, Palette, Check, ExternalLink, Sparkles, Sliders } from 'lucide-react';
+import { X, Palette, Check, ExternalLink, Sparkles, Sliders, Sun, Moon, Monitor } from 'lucide-react';
 import { ThemeId } from '../types';
 import { THEMES } from '../data/themes';
 import { sounds } from '../utils/sound';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+
+type ThemePreference = 'system' | 'dark' | 'light';
 
 interface ThemeSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentTheme: ThemeId;
+  themePreference: ThemePreference;
   onSelectTheme: (themeId: ThemeId) => void;
+  onSetPreference: (pref: ThemePreference) => void;
 }
 
 export const ThemeSettingsModal: React.FC<ThemeSettingsModalProps> = ({
   isOpen,
   onClose,
   currentTheme,
-  onSelectTheme
+  themePreference,
+  onSelectTheme,
+  onSetPreference
 }) => {
   const [filterCategory, setFilterCategory] = useState<'All' | 'Custom Style' | 'VSCode Classic'>('All');
-
-  // Listen to Escape key to close
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  const cardRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -50,6 +47,10 @@ export const ThemeSettingsModal: React.FC<ThemeSettingsModalProps> = ({
     >
       <div
         id="theme-settings-modal-card"
+        ref={cardRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="theme-settings-modal-title"
         className="relative w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col glazz-panel shadow-2xl overflow-hidden text-neutral-100 border border-white/15"
         onClick={(e) => e.stopPropagation()}
       >
@@ -61,7 +62,7 @@ export const ThemeSettingsModal: React.FC<ThemeSettingsModalProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold tracking-tight heading-bar-h3 text-neutral-100">
+                <h2 id="theme-settings-modal-title" className="text-lg font-bold tracking-tight heading-bar-h3 text-neutral-100">
                   Theme Settings
                 </h2>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-300 font-mono font-semibold border border-white/15">
@@ -298,6 +299,38 @@ export const ThemeSettingsModal: React.FC<ThemeSettingsModalProps> = ({
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
             <span>Theme persists automatically in local storage.</span>
           </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-neutral-500">Light/Dark:</span>
+            {([
+              { key: 'system' as const, label: 'System', icon: Monitor },
+              { key: 'dark' as const, label: 'Dark', icon: Moon },
+              { key: 'light' as const, label: 'Light', icon: Sun }
+            ].map((opt) => {
+              const Icon = opt.icon;
+              const active = themePreference === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  id={`theme-preference-${opt.key}`}
+                  onClick={() => {
+                    sounds.playClick();
+                    onSetPreference(opt.key);
+                  }}
+                  title={`Use ${opt.label} mode`}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                    active
+                      ? 'btn-glazz-cta text-white shadow-xs'
+                      : 'bg-black/40 border border-white/10 text-neutral-400 hover:text-neutral-200'
+                  }`}
+                >
+                  <Icon className="w-3 h-3" />
+                  <span>{opt.label}</span>
+                </button>
+              );
+            }))}
+          </div>
+
           <button
             id="done-theme-modal-btn"
             onClick={onClose}

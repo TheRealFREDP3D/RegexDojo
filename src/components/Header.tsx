@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppMode, ThemeId } from '../types';
 import { TOTAL_LESSONS } from '../config/constants';
-import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette, BarChart3 } from 'lucide-react';
+import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Sparkles, Palette, BarChart3 } from 'lucide-react';
 import { sounds } from '../utils/sound';
 import { THEMES } from '../data/themes';
 

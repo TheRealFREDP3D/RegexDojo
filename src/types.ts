@@ -29,11 +29,22 @@ export interface ThemeOption {
   sampleCode: string;
 }
 
+export interface ExpectedMatch {
+  text: string;
+  start?: number;
+  end?: number;
+  captures?: string[];
+}
+
 export interface TestCase {
   id: string;
   text: string;
   shouldMatch: boolean;
   explanation: string;
+  expectedMatch?: string;
+  expectedMatches?: ExpectedMatch[];
+  expectedMatchCount?: number;
+  excludeMatch?: string;
 }
 
 export interface Lesson {
@@ -54,7 +65,7 @@ export interface Lesson {
 
 export interface TokenBreakdown {
   raw: string;
-  type: 'literal' | 'dot' | 'anchor' | 'class' | 'shorthand' | 'quantifier' | 'group' | 'alternation' | 'boundary' | 'lookaround' | 'escape' | 'flag' | 'unknown';
+  type: 'literal' | 'dot' | 'anchor' | 'class' | 'shorthand' | 'quantifier' | 'group' | 'alternation' | 'boundary' | 'lookaround' | 'escape' | 'backreference' | 'flag' | 'unknown';
   label: string;
   color: string;
   description: string;

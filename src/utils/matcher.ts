@@ -1,6 +1,15 @@
 import { RegexMatchDetail, MatchHighlightSegment } from '../types';
 import { decodeRegexError } from '../data/errors';
 
+export type MatchExecutionStatus =
+  | 'running'
+  | 'complete'
+  | 'timeout'
+  | 'input-limit'
+  | 'worker-error';
+
+export type MatchFailureKind = 'syntax' | 'timeout' | 'input-limit' | 'worker-error';
+
 export interface RegexErrorDetails {
   raw: string;
   friendly: string;
@@ -16,22 +25,193 @@ export interface ExecuteMatchResult {
   totalMatches: number;
   totalCharsMatched: number;
   executionTimeMs: number;
+  status: MatchExecutionStatus;
+  failureKind?: MatchFailureKind;
+}
+
+export interface RegexMatchJob {
+  pattern: string;
+  flags: string;
+  text: string;
+  maxMatches?: number;
+}
+
+export interface RegexMatchBatchRequest {
+  requestId: number;
+  jobs: RegexMatchJob[];
+}
+
+export interface RegexMatchBatchResponse {
+  requestId: number;
+  results: ExecuteMatchResult[];
+}
+
+export const REGEX_EXECUTION_LIMITS = Object.freeze({
+  maxPatternLength: 2_000,
+  maxFlagsLength: 16,
+  maxTextLength: 1_000_000,
+  maxMatches: 500,
+  maxBatchJobs: 100,
+  timeoutMs: 1_000
+});
+
+function createErrorDetails(raw: string, title: string, likelyFix: string): RegexErrorDetails {
+  return {
+    raw,
+    friendly: raw,
+    title,
+    likelyFix
+  };
+}
+
+export function createEmptyMatchResult(): ExecuteMatchResult {
+  return {
+    isValid: true,
+    matches: [],
+    totalMatches: 0,
+    totalCharsMatched: 0,
+    executionTimeMs: 0,
+    status: 'complete'
+  };
+}
+
+export function createRunningMatchResult(): ExecuteMatchResult {
+  return {
+    ...createEmptyMatchResult(),
+    status: 'running'
+  };
+}
+
+export function createTimeoutMatchResult(timeoutMs: number = REGEX_EXECUTION_LIMITS.timeoutMs): ExecuteMatchResult {
+  const raw = `Regex execution exceeded ${timeoutMs} ms.`;
+  return {
+    ...createEmptyMatchResult(),
+    isValid: false,
+    error: raw,
+    errorDetails: createErrorDetails(
+      raw,
+      'Regex Timed Out',
+      'Simplify the pattern, reduce ambiguous quantifiers, or test a smaller text sample.'
+    ),
+    executionTimeMs: timeoutMs,
+    status: 'timeout',
+    failureKind: 'timeout'
+  };
+}
+
+export function createWorkerErrorMatchResult(raw: string = 'The regex worker stopped before returning a result.'): ExecuteMatchResult {
+  return {
+    ...createEmptyMatchResult(),
+    isValid: false,
+    error: raw,
+    errorDetails: createErrorDetails(
+      raw,
+      'Regex Worker Error',
+      'Refresh the Playground and try a smaller pattern or text sample.'
+    ),
+    status: 'worker-error',
+    failureKind: 'worker-error'
+  };
+}
+
+export function createInputLimitMatchResult(
+  inputName: string,
+  actual: number,
+  limit: number
+): ExecuteMatchResult {
+  const raw = `${inputName} size ${actual} exceeds the limit of ${limit}.`;
+  return {
+    ...createEmptyMatchResult(),
+    isValid: false,
+    error: raw,
+    errorDetails: createErrorDetails(
+      raw,
+      'Regex Input Limit Exceeded',
+      `Keep ${inputName} within ${limit} ${limit === 1 ? 'item' : 'items'} and try again.`
+    ),
+    status: 'input-limit',
+    failureKind: 'input-limit'
+  };
+}
+
+export function validateRegexMatchJob(job: RegexMatchJob): ExecuteMatchResult | null {
+  if (job.pattern.length > REGEX_EXECUTION_LIMITS.maxPatternLength) {
+    return createInputLimitMatchResult(
+      'pattern',
+      job.pattern.length,
+      REGEX_EXECUTION_LIMITS.maxPatternLength
+    );
+  }
+
+  if (job.flags.length > REGEX_EXECUTION_LIMITS.maxFlagsLength) {
+    return createInputLimitMatchResult(
+      'flags',
+      job.flags.length,
+      REGEX_EXECUTION_LIMITS.maxFlagsLength
+    );
+  }
+
+  if (job.text.length > REGEX_EXECUTION_LIMITS.maxTextLength) {
+    return createInputLimitMatchResult(
+      'text',
+      job.text.length,
+      REGEX_EXECUTION_LIMITS.maxTextLength
+    );
+  }
+
+  const maxMatches = job.maxMatches ?? REGEX_EXECUTION_LIMITS.maxMatches;
+  if (!Number.isSafeInteger(maxMatches) || maxMatches < 1) {
+    return createInputLimitMatchResult('match limit', 0, 1);
+  }
+
+  if (maxMatches > REGEX_EXECUTION_LIMITS.maxMatches) {
+    return createInputLimitMatchResult(
+      'match limit',
+      maxMatches,
+      REGEX_EXECUTION_LIMITS.maxMatches
+    );
+  }
+
+  return null;
+}
+
+export function createSyntaxErrorResult(raw: string, executionTimeMs: number = 0): ExecuteMatchResult {
+  const message = raw || 'Invalid regular expression.';
+  const decoded = decodeRegexError(message);
+  return {
+    ...createEmptyMatchResult(),
+    isValid: false,
+    error: decoded ? decoded.friendly : message,
+    errorDetails: decoded
+      ? {
+          raw: message,
+          friendly: decoded.friendly,
+          title: decoded.title,
+          likelyFix: decoded.likelyFix
+        }
+      : createErrorDetails(
+          message,
+          'Regex Syntax Error',
+          'Check your pattern for typos, unbalanced brackets, or invalid escapes.'
+        ),
+    executionTimeMs,
+    failureKind: 'syntax'
+  };
 }
 
 export function executeRegexMatch(
   pattern: string,
   flags: string,
   text: string,
-  maxMatches: number = 500
+  maxMatches: number = REGEX_EXECUTION_LIMITS.maxMatches
 ): ExecuteMatchResult {
+  const validationError = validateRegexMatchJob({ pattern, flags, text, maxMatches });
+  if (validationError) {
+    return validationError;
+  }
+
   if (!pattern) {
-    return {
-      isValid: true,
-      matches: [],
-      totalMatches: 0,
-      totalCharsMatched: 0,
-      executionTimeMs: 0
-    };
+    return createEmptyMatchResult();
   }
 
   const startTime = performance.now();
@@ -68,7 +248,6 @@ export function executeRegexMatch(
       // Global matches
       let match: RegExpExecArray | null;
       let count = 0;
-      let lastIndexSafety = -1;
 
       while ((match = regex.exec(text)) !== null) {
         count++;
@@ -91,11 +270,15 @@ export function executeRegexMatch(
         });
         totalChars += matchText.length;
 
-        // Zero-length match guard to prevent infinite loops (e.g. empty pattern /a*/ on non-matching text)
-        if (regex.lastIndex === lastIndexSafety) {
+        // Zero-length match guard: advance immediately to prevent infinite loops
+        if (matchText.length === 0) {
+          // Advance by one character to prevent getting stuck on zero-length matches
           regex.lastIndex++;
+          // If we're at the end of the string, break to avoid infinite loop
+          if (regex.lastIndex > text.length) {
+            break;
+          }
         }
-        lastIndexSafety = regex.lastIndex;
 
         if (count >= maxMatches) {
           break;
@@ -111,33 +294,15 @@ export function executeRegexMatch(
       matches,
       totalMatches: matches.length,
       totalCharsMatched: totalChars,
-      executionTimeMs
+      executionTimeMs,
+      status: 'complete'
     };
   } catch (err: unknown) {
     const endTime = performance.now();
-    const raw = (err as Error).message || 'Invalid regular expression.';
-    const decoded = decodeRegexError(raw);
-    return {
-      isValid: false,
-      error: decoded ? decoded.friendly : raw,
-      errorDetails: decoded
-        ? {
-            raw,
-            friendly: decoded.friendly,
-            title: decoded.title,
-            likelyFix: decoded.likelyFix
-          }
-        : {
-            raw,
-            friendly: raw,
-            title: 'Regex Syntax Error',
-            likelyFix: 'Check your pattern for typos, unbalanced brackets, or invalid escapes.'
-          },
-      matches: [],
-      totalMatches: 0,
-      totalCharsMatched: 0,
-      executionTimeMs: parseFloat((endTime - startTime).toFixed(2))
-    };
+    return createSyntaxErrorResult(
+      err instanceof Error ? err.message : 'Invalid regular expression.',
+      parseFloat((endTime - startTime).toFixed(2))
+    );
   }
 }
 

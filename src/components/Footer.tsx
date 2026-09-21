@@ -1,12 +1,11 @@
 import React from 'react';
 import { AppMode, ThemeId } from '../types';
-import { Sparkles, BookOpen, GraduationCap, ArrowLeftRight, Play, Terminal, Palette } from 'lucide-react';
+import { BookOpen, GraduationCap, ArrowLeftRight, Play, Terminal, Palette } from 'lucide-react';
 import { THEMES } from '../data/themes';
 
 interface FooterProps {
   currentMode: AppMode;
   onSelectMode: (mode: AppMode) => void;
-  isDark: boolean;
   onOpenCheatSheet: () => void;
   completedCount: number;
   currentTheme?: ThemeId;
@@ -16,7 +15,6 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({
   currentMode,
   onSelectMode,
-  isDark,
   onOpenCheatSheet,
   completedCount,
   currentTheme = 'warm-halo',

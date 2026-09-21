@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Lesson, TestCase } from '../types';
+import { Lesson } from '../types';
 import { BASICS_LESSONS } from '../data/lessons';
 import { TOTAL_LESSONS } from '../config/constants';
 import { executeRegexMatch, buildHighlightSegments } from '../utils/matcher';
+import { gradeTestCase } from '../utils/grader';
 import { sounds } from '../utils/sound';
 import confetti from 'canvas-confetti';
 import {
@@ -14,8 +15,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
-  Award,
-  ChevronRight,
   ChevronDown,
   Info
 } from 'lucide-react';
@@ -30,7 +29,6 @@ interface LearnViewProps {
   onSelectLesson: (id: number) => void;
   completedLessonIds: number[];
   onMarkLessonCompleted: (id: number) => void;
-  isDark: boolean;
 }
 
 const capstoneLesson = BASICS_LESSONS[BASICS_LESSONS.length - 1];
@@ -39,8 +37,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
   selectedLessonId,
   onSelectLesson,
   completedLessonIds,
-  onMarkLessonCompleted,
-  isDark
+  onMarkLessonCompleted
 }) => {
   const currentLesson: Lesson = useMemo(() => {
     return BASICS_LESSONS.find((l) => l.id === selectedLessonId) || BASICS_LESSONS[0];
@@ -88,8 +85,9 @@ export const LearnView: React.FC<LearnViewProps> = ({
 
     return currentLesson.testCases.map((tc) => {
       const exec = executeRegexMatch(userPattern, userFlags, tc.text);
-      const isMatched = exec.isValid && exec.totalMatches > 0;
-      const passed = isMatched === tc.shouldMatch;
+      const failure = gradeTestCase(exec, tc);
+      const passed = failure === null;
+
       const segments = buildHighlightSegments(tc.text, exec.matches);
 
       return {

@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { TRANSLATE_PRESETS } from '../data/presets';
 import { tokenizeRegex } from '../utils/tokenizer';
 import { decodeRegexError } from '../data/errors';
-import { TokenBreakdown } from '../types';
 import { sounds } from '../utils/sound';
 import {
   ArrowLeftRight,
@@ -12,18 +11,15 @@ import {
   Check,
   Play,
   RotateCcw,
-  BookOpen,
   Info
 } from 'lucide-react';
 
 interface TranslateViewProps {
   onSendToPlayground: (pattern: string, flags: string) => void;
-  isDark: boolean;
 }
 
 export const TranslateView: React.FC<TranslateViewProps> = ({
-  onSendToPlayground,
-  isDark
+  onSendToPlayground
 }) => {
   const [pattern, setPattern] = useState<string>(
     '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'

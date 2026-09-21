@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+.context/
+.github/copilot-instructions.md
+.github/openai-context.md

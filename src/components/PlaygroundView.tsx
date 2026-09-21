@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PLAYGROUND_PRESETS } from '../data/presets';
-import { executeRegexMatch, buildHighlightSegments, GROUP_COLOR_CLASSES } from '../utils/matcher';
+import { buildHighlightSegments, GROUP_COLOR_CLASSES } from '../utils/matcher';
+import { useRegexWorker } from '../hooks/useRegexWorker';
 import { sounds } from '../utils/sound';
 import {
   Play,
@@ -8,8 +9,6 @@ import {
   Check,
   Share2,
   RotateCcw,
-  Clock,
-  CheckCircle2,
   AlertTriangle,
   Layers,
   Sparkles,
@@ -19,7 +18,11 @@ import {
 interface PlaygroundViewProps {
   initialPattern?: string;
   initialFlags?: string;
-  isDark: boolean;
+  sharedState?: {
+    pattern?: string;
+    flags?: string;
+    text?: string;
+  } | null;
 }
 
 const DEFAULT_PATTERN = '\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b';
@@ -29,18 +32,13 @@ const DEBOUNCE_MS = 200;
 export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   initialPattern,
   initialFlags,
-  isDark
+  sharedState
 }) => {
-  // Load state from URL hash or defaults
+  // Load state from shared URL state, overrides, or localStorage defaults
   const [pattern, setPattern] = useState<string>(() => {
     if (initialPattern !== undefined) return initialPattern;
+    if (sharedState?.pattern !== undefined) return sharedState.pattern;
     try {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#regex=')) {
-        const params = new URLSearchParams(hash.slice(1));
-        const p = params.get('regex');
-        if (p) return decodeURIComponent(p);
-      }
       const saved = localStorage.getItem('regexdojo_pg_pattern');
       return saved || DEFAULT_PATTERN;
     } catch {
@@ -50,13 +48,8 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
   const [flags, setFlags] = useState<string>(() => {
     if (initialFlags !== undefined) return initialFlags;
+    if (sharedState?.flags !== undefined) return sharedState.flags;
     try {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#regex=')) {
-        const params = new URLSearchParams(hash.slice(1));
-        const f = params.get('flags');
-        if (f !== null) return f;
-      }
       const saved = localStorage.getItem('regexdojo_pg_flags');
       return saved !== null ? saved : DEFAULT_FLAGS;
     } catch {
@@ -65,13 +58,8 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   });
 
   const [testText, setTestText] = useState<string>(() => {
+    if (sharedState?.text !== undefined) return sharedState.text;
     try {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#regex=')) {
-        const params = new URLSearchParams(hash.slice(1));
-        const t = params.get('text');
-        if (t) return decodeURIComponent(t);
-      }
       const saved = localStorage.getItem('regexdojo_pg_text');
       return saved || PLAYGROUND_PRESETS[1].content; // Customer directory default
     } catch {
@@ -97,7 +85,6 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
   const [copiedPattern, setCopiedPattern] = useState<boolean>(false);
   const [copiedMatches, setCopiedMatches] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [selectedMatchIndex, setSelectedMatchIndex] = useState<number | null>(null);
 
   // Sync to localStorage
   useEffect(() => {
@@ -110,10 +97,23 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
   }, [pattern, flags, testText]);
 
-  // Execute regex (driven by debounced inputs so it doesn't recompile per keystroke)
-  const matchResult = useMemo(() => {
-    return executeRegexMatch(debouncedPattern, flags, debouncedText);
-  }, [debouncedPattern, flags, debouncedText]);
+  const matchResult = useRegexWorker(debouncedPattern, flags, debouncedText);
+  const engineStatus = matchResult.status === 'running'
+    ? 'Running...'
+    : matchResult.status === 'timeout'
+      ? 'Timed Out'
+      : matchResult.status === 'input-limit'
+        ? 'Input Limited'
+        : matchResult.status === 'worker-error'
+          ? 'Worker Error'
+          : matchResult.isValid
+            ? 'Active & Ready'
+            : 'Syntax Error';
+  const engineStatusColor = matchResult.status === 'running'
+    ? 'bg-amber-400 shadow-[0_0_6px_#fbbf24]'
+    : matchResult.isValid
+      ? 'bg-rose-400 shadow-[0_0_6px_#ff4f63]'
+      : 'bg-red-600';
 
   // Build segments for visual highlighted rendering
   const segments = useMemo(() => {
@@ -135,7 +135,6 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     const found = PLAYGROUND_PRESETS.find((p) => p.id === presetId);
     if (found) {
       setTestText(found.content);
-      setSelectedMatchIndex(null);
     }
   };
 
@@ -171,7 +170,6 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     setPattern('');
     setFlags('g');
     setTestText('');
-    setSelectedMatchIndex(null);
   };
 
   const flagList = [
@@ -330,8 +328,8 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
         <div className="p-3.5 rounded-xl glazz-card border-white/10">
           <div className="text-[11px] font-semibold text-neutral-400">Engine Status</div>
           <div className="text-sm font-semibold text-neutral-200 mt-1 flex items-center gap-1.5 font-mono">
-            <span className={`w-2 h-2 rounded-full ${matchResult.isValid ? 'bg-rose-400 shadow-[0_0_6px_#ff4f63]' : 'bg-red-600'}`} />
-            <span>{matchResult.isValid ? 'Active & Ready' : 'Syntax Error'}</span>
+            <span className={`w-2 h-2 rounded-full ${engineStatusColor}`} />
+            <span>{engineStatus}</span>
           </div>
         </div>
       </div>

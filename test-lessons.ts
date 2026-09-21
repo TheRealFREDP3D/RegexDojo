@@ -8,6 +8,7 @@
 import { BASICS_LESSONS } from './src/data/lessons';
 import { executeRegexMatch } from './src/utils/matcher';
 import { tokenizeRegex } from './src/utils/tokenizer';
+import { gradeTestCase } from './src/utils/grader';
 
 interface TestResult {
   lessonId: number;
@@ -64,19 +65,11 @@ function validateLesson(lesson: typeof BASICS_LESSONS[0]): TestResult {
     for (const testCase of lesson.testCases) {
       const exec = executeRegexMatch(lesson.solution, lesson.flags || '', testCase.text);
 
-      if (!exec.isValid) {
-        result.passed = false;
-        result.errors.push(`Invalid pattern: ${exec.error}`);
-        continue;
-      }
-
-      const isMatched = exec.totalMatches > 0;
-      const testCasePassed = isMatched === testCase.shouldMatch;
-
-      if (!testCasePassed) {
+      const failure = gradeTestCase(exec, testCase);
+      if (failure !== null) {
         result.passed = false;
         result.failedTestCases.push(
-          `Test case "${testCase.id}" failed: expected ${testCase.shouldMatch ? 'match' : 'no match'}, got ${isMatched ? 'match' : 'no match'}. Text: "${testCase.text}"`
+          `Test case "${testCase.id}" failed: ${failure} Text: "${testCase.text}"`
         );
       }
     }
@@ -88,7 +81,7 @@ function validateLesson(lesson: typeof BASICS_LESSONS[0]): TestResult {
   return result;
 }
 
-function validateStructure(results: TestResult[]): string[] {
+function validateStructure(): string[] {
   const errors: string[] = [];
 
   // Unique lesson ids
@@ -156,7 +149,7 @@ function main() {
     }
   }
 
-  const structuralErrors = validateStructure(results);
+  const structuralErrors = validateStructure();
   if (structuralErrors.length > 0) {
     console.log('\n❌ Structural validation failed:');
     structuralErrors.forEach(err => console.log(`   ${err}`));

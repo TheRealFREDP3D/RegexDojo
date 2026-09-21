@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AppMode, ThemeId } from './types';
-import { TOTAL_LESSONS } from './config/constants';
 import { BASICS_LESSONS } from './data/lessons';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -68,13 +67,41 @@ export default function App() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Parse shared playground state from URL hash
+  const [sharedPlaygroundState] = useState<{
+    pattern?: string;
+    flags?: string;
+    text?: string;
+  } | null>(() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.startsWith('#regex=')) {
+        const params = new URLSearchParams(hash.slice(1));
+        const pattern = params.get('regex');
+        const flags = params.get('flags');
+        const text = params.get('text');
+        
+        // Clear the hash after parsing
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        
+        return {
+          pattern: pattern || undefined,
+          flags: flags || undefined,
+          text: text || undefined
+        };
+      }
+    } catch {
+      // If parsing fails, just clear the hash
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    return null;
+  });
+
   // Mode state
   const [currentMode, setCurrentMode] = useState<AppMode>(() => {
     try {
       const hash = window.location.hash;
       if (hash.startsWith('#regex=')) {
-        // Consume the hash and clear it after setting initial state
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
         return 'playground';
       }
       const saved = localStorage.getItem('regexdojo_active_mode');
@@ -306,14 +333,12 @@ export default function App() {
             onSelectLesson={handleSelectLesson}
             completedLessonIds={completedLessonIds}
             onMarkLessonCompleted={handleMarkLessonCompleted}
-            isDark={isDark}
           />
         )}
 
         {currentMode === 'translate' && (
           <TranslateView
             onSendToPlayground={handleSendToPlayground}
-            isDark={isDark}
           />
         )}
 
@@ -321,7 +346,7 @@ export default function App() {
           <PlaygroundView
             initialPattern={playgroundPatternOverride}
             initialFlags={playgroundFlagsOverride}
-            isDark={isDark}
+            sharedState={sharedPlaygroundState}
           />
         )}
       </main>
@@ -330,7 +355,6 @@ export default function App() {
       <Footer
         currentMode={currentMode}
         onSelectMode={handleSelectMode}
-        isDark={isDark}
         currentTheme={currentTheme}
         onOpenThemeSettings={() => {
           sounds.playClick();
@@ -347,7 +371,6 @@ export default function App() {
       <CheatSheetModal
         isOpen={cheatSheetOpen}
         onClose={() => setCheatSheetOpen(false)}
-        isDark={isDark}
       />
 
       {/* Visual Theme Settings Modal */}

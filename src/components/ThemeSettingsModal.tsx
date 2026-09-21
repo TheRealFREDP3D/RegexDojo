@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Palette, Check, ExternalLink, Sparkles, Sliders, Sun, Moon, Monitor } from 'lucide-react';
 import { ThemeId } from '../types';
 import { THEMES } from '../data/themes';

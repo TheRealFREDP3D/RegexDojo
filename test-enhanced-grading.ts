@@ -63,6 +63,14 @@ check('((\\w)(\\w))', 'g', captures, false);
 check('(\\w)(\\w)', 'g', { ...captures, expectedMatches: [{ text: 'ab', captures: ['a', 'b'] }, { text: 'cd', captures: ['d', 'c'] }] }, false);
 check('(\\w)(\\w)', 'g', { ...captures, expectedMatches: [{ text: 'ab', captures: [] }, { text: 'cd' }] }, false);
 
+// Partial capture validation: only validate first group, ignore second
+const partialCaptures: TestCase = {
+  id: 'partial-captures', text: 'ab cd', shouldMatch: true, explanation: '',
+  expectedMatches: [{ text: 'ab', captures: ['a', undefined] }, { text: 'cd', captures: ['c', undefined] }]
+};
+check('(\\w)(\\w)', 'g', partialCaptures, true);
+check('(\\w)(\\w)', 'g', { ...partialCaptures, expectedMatches: [{ text: 'ab', captures: ['z', undefined] }] }, false);
+
 const simple: TestCase = { id: 'simple', text: 'a a', shouldMatch: true, explanation: '' };
 check('a', 'g', simple, true);
 check('z', 'g', simple, false);

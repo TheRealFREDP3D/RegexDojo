@@ -35,9 +35,19 @@ export function gradeTestCase(exec: ExecuteMatchResult, testCase: TestCase): str
       if (expected.captures !== undefined) {
         const expectedCaptures = expected.captures;
         const captures = actual.groups.map((group) => group.value);
-        if (captures.length !== expectedCaptures.length ||
-            captures.some((value, index) => value !== expectedCaptures[index])) {
-          return `Match ${i + 1}: expected captures ${JSON.stringify(expectedCaptures)}, got ${JSON.stringify(captures)}.`;
+        // Check length first
+        if (captures.length !== expectedCaptures.length) {
+          return `Match ${i + 1}: expected ${expectedCaptures.length} capture group(s), got ${captures.length}.`;
+        }
+        // Only validate groups where expected value is not undefined
+        const mismatches: number[] = [];
+        for (let idx = 0; idx < expectedCaptures.length; idx++) {
+          if (expectedCaptures[idx] !== undefined && captures[idx] !== expectedCaptures[idx]) {
+            mismatches.push(idx + 1);
+          }
+        }
+        if (mismatches.length > 0) {
+          return `Match ${i + 1}: capture group(s) ${mismatches.join(', ')} incorrect. Expected ${JSON.stringify(expectedCaptures)}, got ${JSON.stringify(captures)}.`;
         }
       }
     }

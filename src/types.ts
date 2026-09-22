@@ -33,7 +33,7 @@ export interface ExpectedMatch {
   text: string;
   start?: number;
   end?: number;
-  captures?: string[];
+  captures?: (string | undefined)[];
 }
 
 export interface TestCase {

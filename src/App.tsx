@@ -68,6 +68,9 @@ export default function App() {
   });
 
   // Parse shared playground state from URL hash
+  // URL format: #regex=<pattern>&flags=<flags>&text=<text>
+  // Example: #regex=\b\w+@[\w.]+&flags=g&text=test@example.com
+  // All parameters are optional. The hash is consumed once on mount and then cleared.
   const [sharedPlaygroundState] = useState<{
     pattern?: string;
     flags?: string;

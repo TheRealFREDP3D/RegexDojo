@@ -6,7 +6,7 @@ An interactive regex learning playground built with React, Vite, and TypeScript.
 
 Share playground states via URL hash. The format is:
 
-```
+```text
 #regex=<pattern>&flags=<flags>&text=<text>
 ```
 
@@ -16,7 +16,7 @@ All parameters are optional. The hash is consumed once on mount and then cleared
 
 Share an email regex pattern:
 
-```
+```text
 #regex=\b\w+@[\w.]+&flags=g&text=test@example.com
 ```
 

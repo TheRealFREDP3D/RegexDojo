@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppMode, ThemeId } from '../types';
 import { TOTAL_LESSONS } from '../config/constants';
-import { Terminal, Volume2, VolumeX, Moon, Sun, BookOpen, Award, Sparkles, Palette, BarChart3 } from 'lucide-react';
+import { Volume2, VolumeX, Moon, Sun, BookOpen, Sparkles, Palette, BarChart3 } from 'lucide-react';
 import { sounds } from '../utils/sound';
 import { THEMES } from '../data/themes';
 
@@ -76,30 +76,10 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="brand-logo-btn"
             onClick={() => onSelectMode('intro')}
-            className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-none"
+            className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-600 flex items-center justify-center text-white shadow-lg shadow-rose-950/60 border border-rose-400/40 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(239,35,60,0.5)] transition-all">
-              <Terminal className="w-5 h-5 font-bold" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base tracking-tight font-mono">Regex<span className="text-rose-500 text-glow-crimson">Dojo</span></span>
-                <span
-                  id="header-active-theme-badge"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenThemeSettings?.();
-                  }}
-                  title="Click to open theme settings"
-                  className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-semibold border border-rose-500/40 uppercase hover:bg-rose-500/30 transition-all cursor-pointer"
-                >
-                  {activeThemeObj.name}
-                </span>
-              </div>
-              <p className="text-[10px] tracking-tight leading-none hidden sm:block text-neutral-400">
-                Frosted glass &bull; Multi-theme terminal
-              </p>
-            </div>
+            <img src="/favicon/favicon-32x32.png" alt="RegexDojo" className="w-10 h-10 group-hover:scale-110 transition-transform" />
+            <span className="font-bold text-xl tracking-tight font-mono">Regex<span className="text-rose-500 text-glow-crimson">Dojo</span></span>
           </button>
         </div>
 

@@ -57,8 +57,7 @@ const CHEAT_ITEMS: CheatSheetItem[] = [
 export const CheatSheetModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-  isDark: boolean;
-}> = ({ isOpen, onClose, isDark }) => {
+}> = ({ isOpen, onClose }) => {
   const [search, setSearch] = useState('');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [selectedCat, setSelectedCat] = useState<string>('All');
@@ -78,9 +77,14 @@ export const CheatSheetModal: React.FC<{
   });
 
   const handleCopy = (token: string) => {
-    navigator.clipboard.writeText(token);
-    setCopiedToken(token);
-    setTimeout(() => setCopiedToken(null), 1500);
+    navigator.clipboard.writeText(token)
+      .then(() => {
+        setCopiedToken(token);
+        setTimeout(() => setCopiedToken(null), 1500);
+      })
+      .catch(() => {
+        // Clipboard access denied or failed - silently ignore
+      });
   };
 
   return (

@@ -84,12 +84,15 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
 
     // 3. Dot wildcard
     if (char === '.') {
+      const dotDesc = flags.includes('s') 
+        ? 'Matches any single character including line terminators (dotAll mode).'
+        : 'Matches any single character except line terminators (\\n, \\r).';
       tokens.push({
         raw: '.',
         type: 'dot',
         label: 'Any Character (Dot)',
         color: 'bg-sky-500/20 text-sky-300 border-sky-500/40',
-        description: 'Matches any single character except line terminators (\\n, \\r).'
+        description: dotDesc
       });
       i++;
       continue;
@@ -168,6 +171,39 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
             color: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
             description: 'Asserts a position where adjacent characters are both word characters or both non-word characters.'
           });
+        } else if (next === 'n') {
+          tokens.push({
+            raw,
+            type: 'escape',
+            label: 'Newline (\\n)',
+            color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+            description: 'Matches a newline character (line feed).'
+          });
+        } else if (next === 'r') {
+          tokens.push({
+            raw,
+            type: 'escape',
+            label: 'Carriage Return (\\r)',
+            color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+            description: 'Matches a carriage return character.'
+          });
+        } else if (next === 't') {
+          tokens.push({
+            raw,
+            type: 'escape',
+            label: 'Tab (\\t)',
+            color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+            description: 'Matches a tab character.'
+          });
+        } else if (next >= '1' && next <= '9') {
+          // Backreference
+          tokens.push({
+            raw,
+            type: 'backreference',
+            label: `Backreference (${raw})`,
+            color: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+            description: `Matches the same text as the previously captured group ${next}.`
+          });
         } else {
           // Escaped literal
           tokens.push({
@@ -186,6 +222,19 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
     // 5. Character Classes [...]
     if (char === '[') {
       let j = i + 1;
+      // Handle special case [^] - empty negated class that matches any character
+      if (j < len && pattern[j] === '^' && j + 1 < len && pattern[j + 1] === ']') {
+        tokens.push({
+          raw: '[^]',
+          type: 'class',
+          label: 'Any Character Class',
+          color: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
+          description: 'Matches any single character (equivalent to dot with dotAll flag).'
+        });
+        i += 3;
+        continue;
+      }
+      
       // Handle immediate closing bracket like []] or [^]]
       if (j < len && pattern[j] === '^') j++;
       if (j < len && pattern[j] === ']') j++;
@@ -207,14 +256,19 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
         const raw = pattern.slice(i, j + 1);
         const isNegated = raw.startsWith('[^');
         const inner = isNegated ? raw.slice(2, -1) : raw.slice(1, -1);
+        
+        // Handle empty class [] which matches nothing
+        const isEmpty = inner === '';
         tokens.push({
           raw,
           type: 'class',
-          label: isNegated ? 'Negated Class' : 'Character Class',
+          label: isEmpty ? 'Empty Class' : (isNegated ? 'Negated Class' : 'Character Class'),
           color: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
-          description: isNegated
-            ? `Matches any single character EXCEPT those in the set: ${inner}`
-            : `Matches any single character present in the set: ${inner}`
+          description: isEmpty
+            ? 'Matches nothing (empty character class).'
+            : (isNegated
+              ? `Matches any single character EXCEPT those in the set: ${inner}`
+              : `Matches any single character present in the set: ${inner}`)
         });
         i = j + 1;
         continue;
@@ -230,6 +284,10 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
         const hasComma = raw.includes(',');
         const max = match[2];
 
+        // Check for lazy modifier
+        const isLazy = i + raw.length < len && pattern[i + raw.length] === '?';
+        const actualRaw = isLazy ? raw + '?' : raw;
+
         let desc = `Matches preceding item exactly ${min} time(s).`;
         if (hasComma) {
           if (!max) {
@@ -238,15 +296,18 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
             desc = `Matches preceding item between ${min} and ${max} times (inclusive).`;
           }
         }
+        if (isLazy) {
+          desc = desc.replace('Matches', 'Matches (lazy)').replace('time(s)', 'time(s), matching as few as possible');
+        }
 
         tokens.push({
-          raw,
+          raw: actualRaw,
           type: 'quantifier',
-          label: `Repeats {${min}${hasComma ? ',' + (max || '') : ''}}`,
+          label: isLazy ? `Repeats {${min}${hasComma ? ',' + (max || '') : ''}} (Lazy)` : `Repeats {${min}${hasComma ? ',' + (max || '') : ''}}`,
           color: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
           description: desc
         });
-        i += raw.length;
+        i += actualRaw.length;
         continue;
       }
     }
@@ -339,6 +400,22 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
         });
         i += 3;
         continue;
+      } else if (pattern.startsWith('(?<', i)) {
+        // Named capture group - extract the name
+        const nameMatch = pattern.slice(i + 3).match(/^([^>]+)>/);
+        if (nameMatch) {
+          const groupName = nameMatch[1];
+          const raw = `(?<${groupName}>`;
+          tokens.push({
+            raw,
+            type: 'group',
+            label: `Named Capture Group (?<${groupName}>)`,
+            color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+            description: `Begins a named capture group "${groupName}" that bundles tokens and saves matches into a named memory slot.`
+          });
+          i += raw.length;
+          continue;
+        }
       } else {
         tokens.push({
           raw: '(',
@@ -375,12 +452,54 @@ export function tokenizeRegex(pattern: string, flags: string = ''): TokenizeResu
 
     if (litEnd > i) {
       const literalStr = pattern.slice(i, litEnd);
+      
+      // Check if the next character after the literal is a quantifier
+      // If so, we need to split the literal so the quantifier only applies to the last character
+      const nextChar = litEnd < len ? pattern[litEnd] : null;
+      const isQuantifierNext = nextChar && ['*', '+', '?', '{'].includes(nextChar);
+      
+      if (isQuantifierNext && literalStr.length > 1) {
+        // Split the literal: all but last char as one literal, last char separately
+        const mainPart = literalStr.slice(0, -1);
+        const lastChar = literalStr.slice(-1);
+        
+        if (mainPart) {
+          const mainDesc = flags.includes('i')
+            ? `Matches the exact string "${mainPart}" (case-insensitive with i flag).`
+            : `Matches the exact string "${mainPart}" case-sensitively.`;
+          tokens.push({
+            raw: mainPart,
+            type: 'literal',
+            label: `Literal "${mainPart}"`,
+            color: 'bg-neutral-800 text-neutral-200 border-neutral-700',
+            description: mainDesc
+          });
+        }
+        
+        const lastDesc = flags.includes('i')
+          ? `Matches the exact character "${lastChar}" (case-insensitive with i flag).`
+          : `Matches the exact character "${lastChar}" case-sensitively.`;
+        tokens.push({
+          raw: lastChar,
+          type: 'literal',
+          label: `Literal "${lastChar}"`,
+          color: 'bg-neutral-800 text-neutral-200 border-neutral-700',
+          description: lastDesc
+        });
+        
+        i = litEnd;
+        continue;
+      }
+      
+      const literalDesc = flags.includes('i')
+        ? `Matches the exact string "${literalStr}" (case-insensitive with i flag).`
+        : `Matches the exact string "${literalStr}" case-sensitively.`;
       tokens.push({
         raw: literalStr,
         type: 'literal',
         label: `Literal "${literalStr}"`,
         color: 'bg-neutral-800 text-neutral-200 border-neutral-700',
-        description: `Matches the exact string "${literalStr}" case-sensitively.`
+        description: literalDesc
       });
       i = litEnd;
       continue;
@@ -449,11 +568,17 @@ function generateNaturalSummary(tokens: TokenBreakdown[], flags: string): string
       else if (t.raw === '\\S') tokenText = 'a non-whitespace character';
       else tokenText = t.label;
     } else if (t.type === 'class') {
-      tokenText = `character in ${t.raw}`;
+      if (t.raw === '[^]') {
+        tokenText = 'any single character';
+      } else {
+        tokenText = `character in ${t.raw}`;
+      }
     } else if (t.type === 'boundary') {
       tokenText = 'word boundary';
     } else if (t.type === 'escape') {
       tokenText = `escaped character '${t.raw.slice(1)}'`;
+    } else if (t.type === 'backreference') {
+      tokenText = `backreference to group ${t.raw.slice(1)}`;
     } else if (t.type === 'alternation') {
       tokenText = 'OR';
     } else if (t.type === 'lookaround') {
@@ -473,7 +598,10 @@ function generateNaturalSummary(tokens: TokenBreakdown[], flags: string): string
       if (q.raw === '+') quantDesc = 'one or more times';
       else if (q.raw === '*') quantDesc = 'zero or more times';
       else if (q.raw === '?') quantDesc = 'optionally (0 or 1 time)';
-      else if (q.raw.startsWith('{')) quantDesc = q.description.toLowerCase().replace('matches preceding item ', '');
+      else if (q.raw === '+?') quantDesc = 'one or more times (lazy)';
+      else if (q.raw === '*?') quantDesc = 'zero or more times (lazy)';
+      else if (q.raw === '??') quantDesc = 'optionally (0 or 1 time, lazy)';
+      else if (q.raw.startsWith('{')) quantDesc = q.description.toLowerCase().replace('matches preceding item ', '').replace('matches (lazy) preceding item ', '');
 
       descriptors.push(`${tokenText} (${quantDesc})`);
       idx += 2;

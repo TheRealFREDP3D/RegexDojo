@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ThemeOption } from '../types';
 
 export const THEMES: ThemeOption[] = [
@@ -52,7 +57,7 @@ export const THEMES: ThemeOption[] = [
       text: '#eceff4',
       glow: 'rgba(136, 192, 208, 0.35)'
     },
-    sampleCode: '/^nord\\b(frost|aurora)$/i'
+    sampleCode: '/^nord_(frost|aurora)$/i'
   },
   {
     id: 'dracula',

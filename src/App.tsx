@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AppMode, ThemeId } from './types';
-import { TOTAL_LESSONS } from './config/constants';
 import { BASICS_LESSONS } from './data/lessons';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -68,13 +67,44 @@ export default function App() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Parse shared playground state from URL hash
+  // URL format: #regex=<pattern>&flags=<flags>&text=<text>
+  // Example: #regex=\b\w+@[\w.]+&flags=g&text=test@example.com
+  // All parameters are optional. The hash is consumed once on mount and then cleared.
+  const [sharedPlaygroundState] = useState<{
+    pattern?: string;
+    flags?: string;
+    text?: string;
+  } | null>(() => {
+    try {
+      const hash = window.location.hash;
+      if (hash.startsWith('#regex=')) {
+        const params = new URLSearchParams(hash.slice(1));
+        const pattern = params.get('regex');
+        const flags = params.get('flags');
+        const text = params.get('text');
+        
+        // Clear the hash after parsing
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        
+        return {
+          pattern: pattern || undefined,
+          flags: flags || undefined,
+          text: text || undefined
+        };
+      }
+    } catch {
+      // If parsing fails, just clear the hash
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    return null;
+  });
+
   // Mode state
   const [currentMode, setCurrentMode] = useState<AppMode>(() => {
     try {
       const hash = window.location.hash;
       if (hash.startsWith('#regex=')) {
-        // Consume the hash and clear it after setting initial state
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
         return 'playground';
       }
       const saved = localStorage.getItem('regexdojo_active_mode');
@@ -106,7 +136,15 @@ export default function App() {
     try {
       const saved = localStorage.getItem('regexdojo_completed_lessons');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const validIds = new Set(BASICS_LESSONS.map((l) => l.id));
+          return Array.from(
+            new Set(
+              parsed.filter((id): id is number => typeof id === 'number' && validIds.has(id))
+            )
+          );
+        }
       }
       return [];
     } catch {
@@ -126,6 +164,17 @@ export default function App() {
     setCurrentTheme(themeId);
     try {
       localStorage.setItem('regexdojo_theme_id', themeId);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Set Theme Preference handler ('system' | 'dark' | 'light')
+  const handleSetPreference = useCallback((pref: ThemePreference) => {
+    sounds.playClick();
+    setThemePreference(pref);
+    try {
+      localStorage.setItem('regexdojo_theme_preference', pref);
     } catch {
       // ignore
     }
@@ -179,6 +228,11 @@ export default function App() {
   const handleSelectMode = useCallback((mode: AppMode) => {
     sounds.playClick();
     setCurrentMode(mode);
+    // Clear playground overrides when switching away from playground
+    if (mode !== 'playground') {
+      setPlaygroundPatternOverride(undefined);
+      setPlaygroundFlagsOverride(undefined);
+    }
     try {
       localStorage.setItem('regexdojo_active_mode', mode);
     } catch {
@@ -265,7 +319,7 @@ export default function App() {
 
       {/* Ambient Radial Mesh & Glass Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -297,6 +351,7 @@ export default function App() {
             completedLessonCount={completedLessonIds.length}
             totalLessons={BASICS_LESSONS.length}
             isDark={isDark}
+            activeLessonId={selectedLessonId}
           />
         )}
 
@@ -306,14 +361,12 @@ export default function App() {
             onSelectLesson={handleSelectLesson}
             completedLessonIds={completedLessonIds}
             onMarkLessonCompleted={handleMarkLessonCompleted}
-            isDark={isDark}
           />
         )}
 
         {currentMode === 'translate' && (
           <TranslateView
             onSendToPlayground={handleSendToPlayground}
-            isDark={isDark}
           />
         )}
 
@@ -321,7 +374,7 @@ export default function App() {
           <PlaygroundView
             initialPattern={playgroundPatternOverride}
             initialFlags={playgroundFlagsOverride}
-            isDark={isDark}
+            sharedState={sharedPlaygroundState}
           />
         )}
       </main>
@@ -330,7 +383,6 @@ export default function App() {
       <Footer
         currentMode={currentMode}
         onSelectMode={handleSelectMode}
-        isDark={isDark}
         currentTheme={currentTheme}
         onOpenThemeSettings={() => {
           sounds.playClick();
@@ -347,7 +399,6 @@ export default function App() {
       <CheatSheetModal
         isOpen={cheatSheetOpen}
         onClose={() => setCheatSheetOpen(false)}
-        isDark={isDark}
       />
 
       {/* Visual Theme Settings Modal */}
@@ -357,10 +408,7 @@ export default function App() {
         currentTheme={currentTheme}
         themePreference={themePreference}
         onSelectTheme={handleSelectTheme}
-        onSetPreference={(pref) => {
-          sounds.playClick();
-          setThemePreference(pref);
-        }}
+        onSetPreference={handleSetPreference}
       />
       </div>
     </div>

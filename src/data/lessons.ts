@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Lesson } from '../types';
 
 export const BASICS_LESSONS: Lesson[] = [
@@ -65,7 +70,7 @@ export const BASICS_LESSONS: Lesson[] = [
     subtitle: 'The wildcard with virtually no standards',
     beltTier: 'White Belt',
     theory: [
-      'The dot (`.`) is the ultimate imposter. In standard regex, a bare dot matches almost any single character—letters, numbers, punctuation, spaces, emojis—with only newline characters (`\\n`) usually excluded.',
+      'The dot (`.`) is the ultimate imposter. In standard regex, a bare dot matches almost any single character—letters, numbers, punctuation, spaces—with only newline characters (`\\n`) usually excluded.',
       'Much like a developer’s attention span on a late Friday afternoon, the dot accepts anything that crosses its path. The pattern `h.t` will gladly match `hat`, `hot`, `hit`, `h4t`, `h#t`, and even `h t` with a space.',
       'Because the dot is so indiscriminate, relying on it carelessly is the number one cause of regex accidental matches. Remember: with great flexibility comes the terrifying responsibility of debugging.',
       'Your task: match any three-letter word beginning with "b" and ending with "t".'
@@ -122,12 +127,13 @@ export const BASICS_LESSONS: Lesson[] = [
     beltTier: 'Yellow Belt',
     theory: [
       'By default, regex engines are opportunistic scavengers: they will match a pattern anywhere in the target string. Sometimes, however, you need to stake a claim on where the match starts or finishes.',
-      'Meet the anchors: `^` (caret) asserts the start of a string (or line), and `$` (dollar sign) asserts the end of a string (or line).',
-      'Anchors are zero-width assertions. They don’t consume or match any actual characters themselves; they merely assert that the engine is currently standing at the exact edge of the world.',
-      'For example, `^Error` only matches if the string starts with "Error". `done$` only matches if the string terminates with "done". Wrapping both—`^success$`—requires the string to equal "success" entirely.'
+      'Meet the anchors: `^` (caret) asserts the start of the string, and `$` (dollar sign) asserts the end of the string.',
+      'Anchors are zero-width assertions. They don\'t consume or match any actual characters themselves; they merely assert that the engine is currently standing at the exact edge of the world.',
+      'For example, `^Error` only matches if the string starts with "Error". `done$` only matches if the string terminates with "done". Wrapping both—`^success$`—requires the string to equal "success" entirely.',
+      'You\'ll sometimes see patterns like `.*` between anchors. The dot `.` matches any single character, and the star `*` means "zero or more times". Together, `.*` matches any sequence of characters (or nothing at all).'
     ],
     exercisePrompt: 'Match lines that start with the word "PASS" and end with a dot ".". The entire string must start with PASS and end with a dot.',
-    hint: 'Combine `^PASS` at the start with `\\.$` at the end. Don\'t forget to escape the dot with `\\.` so it doesn\'t act as a wildcard! For any middle characters, you can use `.*` or match `^PASS: .*\\.$`.',
+    hint: 'Combine `^PASS` at the start with `\\.$` at the end. Don\'t forget to escape the dot with `\\.` so it doesn\'t act as a wildcard! The pattern `^PASS: .*\\.$` matches strings starting with "PASS: " and ending with a period, with any content in between.',
     solution: '^PASS: .*\\.$',
     flags: '',
     tip: 'Think of `^` as an anchor pinned to the left margin, and `$` as an anchor pinned to the right margin.',
@@ -202,7 +208,7 @@ export const BASICS_LESSONS: Lesson[] = [
       },
       {
         id: '4-4',
-        text: 'Cite your sources properly.',
+        text: 'cite your sources properly.',
         shouldMatch: false,
         explanation: '"cit" is not allowed; "i" is not in [aou].'
       },
@@ -222,13 +228,13 @@ export const BASICS_LESSONS: Lesson[] = [
     beltTier: 'Green Belt',
     theory: [
       'Typing `[0-9]` and `[a-zA-Z0-9_]` over and over is a great way to develop carpal tunnel syndrome. Fortunately, regex provides built-in shorthands for common character sets:',
-      '• `\\d`: Any digit (same as `[0-9]`)\n• `\\w`: Any "word" character: letters, numbers, and underscores (same as `[a-zA-Z0-9_]`)\n• `\\s`: Any whitespace character: spaces, tabs, line breaks (`[ \\t\\r\\n]`)\n',
+      '• `\\d`: Any digit (same as `[0-9]`)\n• `\\w`: Any "word" character: letters, numbers, and underscores (same as `[a-zA-Z0-9_]`)\n• `\\s`: Any whitespace character: spaces, tabs, line breaks, form feed, and other Unicode whitespace\n',
       'The poetic inverse: capitalizing the letter flips the meaning completely! `\\D` is non-digits, `\\W` is non-word characters, and `\\S` is non-whitespace characters.',
       'Exercise: Match a product code formatted as two uppercase letters, followed by a dash, followed by three digits (e.g., `AB-123`).'
     ],
     exercisePrompt: 'Match product codes consisting of two uppercase letters [A-Z], a hyphen, and three digits \\d.',
-    hint: 'Use `[A-Z][A-Z]-\\d\\d\\d` (or quantifiers once you know them!). For now, `[A-Z][A-Z]-\\d\\d\\d` works cleanly.',
-    solution: '[A-Z]{2}-\\d{3}|[A-Z][A-Z]-\\d\\d\\d',
+    hint: 'Use `[A-Z][A-Z]-\\d\\d\\d` to match exactly two letters and three digits.',
+    solution: '[A-Z][A-Z]-\\d\\d\\d',
     flags: 'g',
     tip: 'Remember: `\\w` includes underscores `_`. If you don\'t want underscores, stick to `[a-zA-Z0-9]`.',
     testCases: [
@@ -336,24 +342,28 @@ export const BASICS_LESSONS: Lesson[] = [
         id: '7-1',
         text: 'He said "hello" to her.',
         shouldMatch: true,
+        expectedMatch: '"hello"',
         explanation: 'Matches "hello" - the shortest content between quotes.'
       },
       {
         id: '7-2',
         text: 'The file "data.txt" was processed.',
         shouldMatch: true,
+        expectedMatch: '"data.txt"',
         explanation: 'Matches "data.txt" - shortest quoted string.'
       },
       {
         id: '7-3',
         text: 'She shouted "stop!" and ran.',
         shouldMatch: true,
+        expectedMatch: '"stop!"',
         explanation: 'Matches "stop!" - shortest quoted text with punctuation.'
       },
       {
         id: '7-4',
         text: 'Message: "first" then "second" end.',
         shouldMatch: true,
+        expectedMatches: [{ text: '"first"', start: 9, end: 16 }, { text: '"second"', start: 22, end: 30 }],
         explanation: 'Lazy quantifier matches "first" separately from "second".'
       },
       {
@@ -366,7 +376,15 @@ export const BASICS_LESSONS: Lesson[] = [
         id: '7-6',
         text: 'Empty quotes "" should match.',
         shouldMatch: true,
+        expectedMatch: '""',
         explanation: 'The `*` in the lazy `.*?` allows zero characters, so even empty quotes `""` match.'
+      },
+      {
+        id: '7-7',
+        text: 'He said "hello" and "world" to her.',
+        shouldMatch: true,
+        expectedMatches: [{ text: '"hello"', start: 8, end: 15 }, { text: '"world"', start: 20, end: 27 }],
+        explanation: 'Lazy quantifier should match each quoted string separately, not one big match.'
       }
     ]
   },
@@ -432,7 +450,7 @@ export const BASICS_LESSONS: Lesson[] = [
       'If you just want grouping without wasting memory on capturing, you can use non-capturing groups: `(?:ha)+`. The engine will group without allocating a capture pocket.',
       'Challenge: Match repeated laughter like "ha", "haha", or "hahaha" where "ha" repeats one or more times from start to finish.'
     ],
-    exercisePrompt: 'Write a pattern that matches the full string composed of one or more repetitions of "ha" (e.g. "ha", "haha", "hahahaha").',
+    exercisePrompt: 'Match the full string composed of one or more repetitions of "ha" (e.g. "ha", "haha", "hahahaha"). Use one capturing group around "ha" so Group 1 contains the final "ha" repetition.',
     hint: 'Group "ha" in parentheses and follow with a `+` quantifier: `^(ha)+$`.',
     solution: '^(ha)+$',
     flags: '',
@@ -442,18 +460,21 @@ export const BASICS_LESSONS: Lesson[] = [
         id: '9-1',
         text: 'ha',
         shouldMatch: true,
+        expectedMatches: [{ text: 'ha', start: 0, end: 2, captures: ['ha'] }],
         explanation: 'One repetition of "ha".'
       },
       {
         id: '9-2',
         text: 'haha',
         shouldMatch: true,
+        expectedMatches: [{ text: 'haha', start: 0, end: 4, captures: ['ha'] }],
         explanation: 'Two repetitions of "ha".'
       },
       {
         id: '9-3',
         text: 'hahahaha',
         shouldMatch: true,
+        expectedMatches: [{ text: 'hahahaha', start: 0, end: 8, captures: ['ha'] }],
         explanation: 'Four repetitions of "ha".'
       },
       {
@@ -530,7 +551,7 @@ export const BASICS_LESSONS: Lesson[] = [
       'Have you ever searched for the word "cat" in a document, only to find yourself highlighting "ca-t-egory", "ca-t-astrophe", and "ca-t-erpillar"? This is why `\\b` exists.',
       '`\\b` is an anchor asserting a word boundary: the invisible zero-width seam between a word character (`\\w`) and a non-word character (or the start/end of the string).',
       'Wrapping a term in word boundaries—`\\bcat\\b`—ensures you only match "cat" when it stands alone as an independent word, ignoring "scat", "cats", or "concatenate".',
-      'Its sibling `\\B` matches non-boundaries: places where a word character is surrounded by other word characters.'
+      'Its sibling `\\B` matches non-boundaries: places where adjacent characters are both word characters or both non-word characters.'
     ],
     exercisePrompt: 'Match the standalone word "plan" using word boundaries \\b, avoiding words like "planet", "airplane", or "planning".',
     hint: 'Wrap "plan" with word boundaries: `\\bplan\\b`.',
@@ -592,12 +613,14 @@ export const BASICS_LESSONS: Lesson[] = [
         id: '12-1',
         text: 'The ticket costs $45 today.',
         shouldMatch: true,
+        expectedMatches: [{ text: '45', start: 18, end: 20 }],
         explanation: 'Matches "45" because it is preceded by "$".'
       },
       {
         id: '12-2',
         text: 'Total bill: $120 plus tax.',
         shouldMatch: true,
+        expectedMatches: [{ text: '120', start: 13, end: 16 }],
         explanation: 'Matches "120" preceded by "$".'
       },
       {
@@ -617,6 +640,13 @@ export const BASICS_LESSONS: Lesson[] = [
         text: 'Price is €45 euros.',
         shouldMatch: false,
         explanation: 'Preceded by euro symbol, not dollar sign.'
+      },
+      {
+        id: '12-6',
+        text: '$45 and $120; 45 without a dollar sign.',
+        shouldMatch: true,
+        expectedMatches: [{ text: '45', start: 1, end: 3 }, { text: '120', start: 9, end: 12 }],
+        explanation: 'Extract both complete amounts, excluding dollar signs and the unrelated 45.'
       }
     ]
   },

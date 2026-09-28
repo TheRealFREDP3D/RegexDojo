@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Lesson, TestCase } from '../types';
+import { Lesson } from '../types';
 import { BASICS_LESSONS } from '../data/lessons';
 import { TOTAL_LESSONS } from '../config/constants';
 import { executeRegexMatch, buildHighlightSegments } from '../utils/matcher';
+import { gradeTestCase } from '../utils/grader';
 import { sounds } from '../utils/sound';
-import confetti from 'canvas-confetti';
 import {
   CheckCircle2,
   XCircle,
@@ -14,8 +14,6 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
-  Award,
-  ChevronRight,
   ChevronDown,
   Info
 } from 'lucide-react';
@@ -30,7 +28,6 @@ interface LearnViewProps {
   onSelectLesson: (id: number) => void;
   completedLessonIds: number[];
   onMarkLessonCompleted: (id: number) => void;
-  isDark: boolean;
 }
 
 const capstoneLesson = BASICS_LESSONS[BASICS_LESSONS.length - 1];
@@ -39,8 +36,7 @@ export const LearnView: React.FC<LearnViewProps> = ({
   selectedLessonId,
   onSelectLesson,
   completedLessonIds,
-  onMarkLessonCompleted,
-  isDark
+  onMarkLessonCompleted
 }) => {
   const currentLesson: Lesson = useMemo(() => {
     return BASICS_LESSONS.find((l) => l.id === selectedLessonId) || BASICS_LESSONS[0];
@@ -88,8 +84,9 @@ export const LearnView: React.FC<LearnViewProps> = ({
 
     return currentLesson.testCases.map((tc) => {
       const exec = executeRegexMatch(userPattern, userFlags, tc.text);
-      const isMatched = exec.isValid && exec.totalMatches > 0;
-      const passed = isMatched === tc.shouldMatch;
+      const failure = gradeTestCase(exec, tc);
+      const passed = failure === null;
+
       const segments = buildHighlightSegments(tc.text, exec.matches);
 
       return {
@@ -132,19 +129,27 @@ export const LearnView: React.FC<LearnViewProps> = ({
       if (isCapstone) {
         sounds.playMasterFanfare();
         if (!PREFERS_REDUCED_MOTION) {
-          confetti({
-            particleCount: 150,
-            spread: 80,
-            origin: { y: 0.6 }
+          import('canvas-confetti').then((module) => {
+            module.default({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.6 }
+            });
+          }).catch(() => {
+            // Silently fail if confetti doesn't load
           });
         }
       } else {
         sounds.playPassChime();
         if (!PREFERS_REDUCED_MOTION) {
-          confetti({
-            particleCount: 70,
-            spread: 60,
-            origin: { y: 0.7 }
+          import('canvas-confetti').then((module) => {
+            module.default({
+              particleCount: 70,
+              spread: 60,
+              origin: { y: 0.7 }
+            });
+          }).catch(() => {
+            // Silently fail if confetti doesn't load
           });
         }
       }

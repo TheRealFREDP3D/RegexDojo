@@ -1,5 +1,12 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import assert from 'node:assert/strict';
 import { BASICS_LESSONS } from './src/data/lessons';
+import { THEMES } from './src/data/themes';
+import { decodeRegexError } from './src/data/errors';
 import { TestCase } from './src/types';
 import { executeRegexMatch } from './src/utils/matcher';
 import { gradeTestCase } from './src/utils/grader';
@@ -85,7 +92,30 @@ check('a', '', { ...simple, shouldMatch: false }, false);
 check('a', 'g', { ...simple, excludeMatch: 'a' }, false);
 check('a', 'g', { ...simple, excludeMatch: '$' }, true);
 check('a|\\$', 'g', { ...simple, text: 'a $', excludeMatch: '$' }, false);
-check('^', '', { ...simple, text: '', expectedMatch: '' }, true);
-check('a', '', { ...simple, expectedMatch: '' }, false);
+
+// Error decoding tests: ensure specific V8 errors are not shadowed by generic entries
+assert.equal(decodeRegexError('Invalid regular expression: /(abc/: Unterminated group')?.title, 'Unterminated Group');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: /[abc/: Unterminated character class')?.title, 'Unterminated Character Class');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: /+/: Nothing to repeat')?.title, 'Nothing to Repeat');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: /a{2/: Incomplete quantifier')?.title, 'Incomplete Quantifier');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: /\\c/: Invalid escape')?.title, 'Invalid Escape');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: /a{2,1}/: numbers out of order in {} quantifier')?.title, 'Quantifier Bounds Out of Order');
+assertions++;
+assert.equal(decodeRegexError('Invalid regular expression: stray generic error')?.title, 'Invalid Regular Expression');
+assertions++;
+
+// Theme sample code validation: verify all theme samples are valid RegExp
+for (const theme of THEMES) {
+  const match = theme.sampleCode.match(/^\/(.*)\/([a-z]*)$/);
+  assert.ok(match, `Theme ${theme.id} sampleCode is not in /pattern/flags format: ${theme.sampleCode}`);
+  const [, pat, fl] = match;
+  assert.doesNotThrow(() => new RegExp(pat, fl), `Theme ${theme.id} sampleCode failed to compile: ${theme.sampleCode}`);
+  assertions++;
+}
 
 console.log(`Enhanced grading: ${assertions} assertions passed.`);

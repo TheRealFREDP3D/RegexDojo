@@ -97,6 +97,16 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     }
   }, [pattern, flags, testText]);
 
+  // Respond to new overrides from Translate mode
+  useEffect(() => {
+    if (initialPattern !== undefined) {
+      setPattern(initialPattern);
+    }
+    if (initialFlags !== undefined) {
+      setFlags(initialFlags);
+    }
+  }, [initialPattern, initialFlags]);
+
   const matchResult = useRegexWorker(debouncedPattern, flags, debouncedText);
   const engineStatus = matchResult.status === 'running'
     ? 'Running...'
@@ -140,17 +150,27 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
 
   const handleCopyPattern = () => {
     sounds.playClick();
-    navigator.clipboard.writeText(`/${pattern}/${flags}`);
-    setCopiedPattern(true);
-    setTimeout(() => setCopiedPattern(false), 1500);
+    navigator.clipboard.writeText(`/${pattern}/${flags}`)
+      .then(() => {
+        setCopiedPattern(true);
+        setTimeout(() => setCopiedPattern(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard access denied or failed - silently ignore
+      });
   };
 
   const handleCopyMatches = () => {
     sounds.playClick();
     const lines = matchResult.matches.map((m) => m.match).join('\n');
-    navigator.clipboard.writeText(lines);
-    setCopiedMatches(true);
-    setTimeout(() => setCopiedMatches(false), 1500);
+    navigator.clipboard.writeText(lines)
+      .then(() => {
+        setCopiedMatches(true);
+        setTimeout(() => setCopiedMatches(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard access denied or failed - silently ignore
+      });
   };
 
   const handleShareLink = () => {
@@ -160,9 +180,14 @@ export const PlaygroundView: React.FC<PlaygroundViewProps> = ({
     params.set('flags', flags);
     params.set('text', testText);
     const fullUrl = `${window.location.origin}${window.location.pathname}#${params.toString()}`;
-    navigator.clipboard.writeText(fullUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+    navigator.clipboard.writeText(fullUrl)
+      .then(() => {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      })
+      .catch(() => {
+        // Clipboard access denied or failed - silently ignore
+      });
   };
 
   const handleReset = () => {

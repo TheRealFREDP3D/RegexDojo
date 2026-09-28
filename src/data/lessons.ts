@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { Lesson } from '../types';
 
 export const BASICS_LESSONS: Lesson[] = [

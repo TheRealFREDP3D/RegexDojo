@@ -1,6 +1,0 @@
-{
-  "name": "RegexDojo",
-  "description": "An interactive, witty, dark-humored regex learning dojo featuring 13 progressive lessons, regex translator, and a live testing playground.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

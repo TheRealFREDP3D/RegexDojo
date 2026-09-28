@@ -1,4 +1,9 @@
 /**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
  * Automated content validator for lesson data
  * Validates that every lesson's official solution passes its own test cases,
  * plus structural rules: unique ids, per-lesson unique test-case ids,

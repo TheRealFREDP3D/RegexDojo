@@ -17,12 +17,6 @@ export interface RegexErrorEntry {
 
 export const REGEX_ERROR_DICTIONARY: RegexErrorEntry[] = [
   {
-    match: 'invalid regular expression',
-    title: 'Invalid Regular Expression',
-    friendly: 'The regex engine rejected your pattern. It is not a valid regular expression.',
-    likelyFix: 'Check for unbalanced brackets, missing escapes, or stray quantifiers.'
-  },
-  {
     match: 'unterminated group',
     title: 'Unterminated Group',
     friendly: 'You opened a group with "(" but never closed it with ")".',
@@ -75,6 +69,13 @@ export const REGEX_ERROR_DICTIONARY: RegexErrorEntry[] = [
     title: 'Quantifier Out of Range',
     friendly: 'A quantifier requests more repetitions than the engine allows.',
     likelyFix: 'Lower the repetition count or split the pattern into smaller pieces.'
+  },
+  // Generic fallback entry - must be LAST to avoid shadowing specific error types above
+  {
+    match: 'invalid regular expression',
+    title: 'Invalid Regular Expression',
+    friendly: 'The regex engine rejected your pattern. It is not a valid regular expression.',
+    likelyFix: 'Check for unbalanced brackets, missing escapes, or stray quantifiers.'
   }
 ];
 

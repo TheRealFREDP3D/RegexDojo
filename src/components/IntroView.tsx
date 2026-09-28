@@ -26,6 +26,7 @@ interface IntroViewProps {
   completedLessonCount: number;
   totalLessons: number;
   isDark: boolean;
+  activeLessonId?: number;
 }
 
 export const IntroView: React.FC<IntroViewProps> = ({
@@ -33,14 +34,16 @@ export const IntroView: React.FC<IntroViewProps> = ({
   onSelectLesson,
   completedLessonCount,
   totalLessons,
-  isDark
+  isDark,
+  activeLessonId
 }) => {
   const [activePhilTab, setActivePhilTab] = useState<'diagnosis' | 'principles' | 'warning' | 'myths'>('diagnosis');
   const [demoInput, setDemoInput] = useState<string>('user_alex99');
 
-  const handleStartLesson1 = () => {
+  const handleStartOrResume = () => {
     sounds.playClick();
-    if (onSelectLesson) onSelectLesson(BASICS_LESSONS[0].id);
+    const targetId = activeLessonId || BASICS_LESSONS[0].id;
+    if (onSelectLesson) onSelectLesson(targetId);
     onSelectMode('learn');
   };
 
@@ -122,7 +125,7 @@ export const IntroView: React.FC<IntroViewProps> = ({
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           <button
             id="intro-start-lesson-btn"
-            onClick={handleStartLesson1}
+            onClick={handleStartOrResume}
             className="btn-ember-primary px-6 py-3 rounded-xl font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer"
           >
             <span>{completedLessonCount > 0 ? 'Resume Dojo Training' : 'Start Lesson 1 (Takes 2 min)'}</span>
@@ -551,8 +554,16 @@ export const IntroView: React.FC<IntroViewProps> = ({
           {/* Card 1: Learn */}
           <div
             id="arena-card-learn"
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectMode('learn')}
-            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-rose-500/40"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectMode('learn');
+              }
+            }}
+            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-rose-500/40 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center mb-4 group-hover:shadow-[0_0_15px_rgba(239,35,60,0.5)] transition-all">
               <Terminal className="w-5 h-5" />
@@ -573,8 +584,16 @@ export const IntroView: React.FC<IntroViewProps> = ({
           {/* Card 2: Translate */}
           <div
             id="arena-card-translate"
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectMode('translate')}
-            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-amber-500/40"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectMode('translate');
+              }
+            }}
+            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-amber-500/40 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-600 to-orange-700 text-white flex items-center justify-center mb-4 group-hover:shadow-[0_0_15px_rgba(255,123,0,0.5)] transition-all">
               <ArrowLeftRight className="w-5 h-5" />
@@ -595,8 +614,16 @@ export const IntroView: React.FC<IntroViewProps> = ({
           {/* Card 3: Playground */}
           <div
             id="arena-card-playground"
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectMode('playground')}
-            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-rose-500/40"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectMode('playground');
+              }
+            }}
+            className="p-6 rounded-2xl ember-glass-card cursor-pointer group hover:scale-[1.01] hover:border-rose-500/40 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 to-amber-600 text-white flex items-center justify-center mb-4 group-hover:shadow-[0_0_15px_rgba(239,35,60,0.5)] transition-all">
               <Play className="w-5 h-5" />

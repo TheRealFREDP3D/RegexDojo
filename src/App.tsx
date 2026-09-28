@@ -136,7 +136,15 @@ export default function App() {
     try {
       const saved = localStorage.getItem('regexdojo_completed_lessons');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          const validIds = new Set(BASICS_LESSONS.map((l) => l.id));
+          return Array.from(
+            new Set(
+              parsed.filter((id): id is number => typeof id === 'number' && validIds.has(id))
+            )
+          );
+        }
       }
       return [];
     } catch {
@@ -156,6 +164,17 @@ export default function App() {
     setCurrentTheme(themeId);
     try {
       localStorage.setItem('regexdojo_theme_id', themeId);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Set Theme Preference handler ('system' | 'dark' | 'light')
+  const handleSetPreference = useCallback((pref: ThemePreference) => {
+    sounds.playClick();
+    setThemePreference(pref);
+    try {
+      localStorage.setItem('regexdojo_theme_preference', pref);
     } catch {
       // ignore
     }
@@ -209,6 +228,11 @@ export default function App() {
   const handleSelectMode = useCallback((mode: AppMode) => {
     sounds.playClick();
     setCurrentMode(mode);
+    // Clear playground overrides when switching away from playground
+    if (mode !== 'playground') {
+      setPlaygroundPatternOverride(undefined);
+      setPlaygroundFlagsOverride(undefined);
+    }
     try {
       localStorage.setItem('regexdojo_active_mode', mode);
     } catch {
@@ -327,6 +351,7 @@ export default function App() {
             completedLessonCount={completedLessonIds.length}
             totalLessons={BASICS_LESSONS.length}
             isDark={isDark}
+            activeLessonId={selectedLessonId}
           />
         )}
 
@@ -383,10 +408,7 @@ export default function App() {
         currentTheme={currentTheme}
         themePreference={themePreference}
         onSelectTheme={handleSelectTheme}
-        onSetPreference={(pref) => {
-          sounds.playClick();
-          setThemePreference(pref);
-        }}
+        onSetPreference={handleSetPreference}
       />
       </div>
     </div>

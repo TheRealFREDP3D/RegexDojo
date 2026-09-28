@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { RegexMatchDetail, MatchHighlightSegment } from '../types';
 import { decodeRegexError } from '../data/errors';
 

@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { ExecuteMatchResult } from './matcher';
 import { TestCase } from '../types';
 

@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export type AppMode = 'intro' | 'learn' | 'translate' | 'playground';
 
 export type ThemeId =

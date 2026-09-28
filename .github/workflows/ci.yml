@@ -30,3 +30,6 @@ jobs:
 
       - name: Test grading regressions
         run: npm run test:grading
+
+      - name: Build production bundle
+        run: npm run build

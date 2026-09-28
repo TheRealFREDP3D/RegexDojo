@@ -77,9 +77,14 @@ export const CheatSheetModal: React.FC<{
   });
 
   const handleCopy = (token: string) => {
-    navigator.clipboard.writeText(token);
-    setCopiedToken(token);
-    setTimeout(() => setCopiedToken(null), 1500);
+    navigator.clipboard.writeText(token)
+      .then(() => {
+        setCopiedToken(token);
+        setTimeout(() => setCopiedToken(null), 1500);
+      })
+      .catch(() => {
+        // Clipboard access denied or failed - silently ignore
+      });
   };
 
   return (

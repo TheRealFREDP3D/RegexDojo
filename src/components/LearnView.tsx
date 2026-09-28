@@ -5,7 +5,6 @@ import { TOTAL_LESSONS } from '../config/constants';
 import { executeRegexMatch, buildHighlightSegments } from '../utils/matcher';
 import { gradeTestCase } from '../utils/grader';
 import { sounds } from '../utils/sound';
-import confetti from 'canvas-confetti';
 import {
   CheckCircle2,
   XCircle,
@@ -130,19 +129,27 @@ export const LearnView: React.FC<LearnViewProps> = ({
       if (isCapstone) {
         sounds.playMasterFanfare();
         if (!PREFERS_REDUCED_MOTION) {
-          confetti({
-            particleCount: 150,
-            spread: 80,
-            origin: { y: 0.6 }
+          import('canvas-confetti').then((module) => {
+            module.default({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.6 }
+            });
+          }).catch(() => {
+            // Silently fail if confetti doesn't load
           });
         }
       } else {
         sounds.playPassChime();
         if (!PREFERS_REDUCED_MOTION) {
-          confetti({
-            particleCount: 70,
-            spread: 60,
-            origin: { y: 0.7 }
+          import('canvas-confetti').then((module) => {
+            module.default({
+              particleCount: 70,
+              spread: 60,
+              origin: { y: 0.7 }
+            });
+          }).catch(() => {
+            // Silently fail if confetti doesn't load
           });
         }
       }

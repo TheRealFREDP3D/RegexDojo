@@ -132,7 +132,7 @@ export const BASICS_LESSONS: Lesson[] = [
       'For example, `^Error` only matches if the string starts with "Error". `done$` only matches if the string terminates with "done". Wrapping both—`^success$`—requires the string to equal "success" entirely.',
       'You\'ll sometimes see patterns like `.*` between anchors. The dot `.` matches any single character, and the star `*` means "zero or more times". Together, `.*` matches any sequence of characters (or nothing at all).'
     ],
-    exercisePrompt: 'Match lines that start with the word "PASS" and end with a dot ".". The entire string must start with PASS and end with a dot.',
+    exercisePrompt: 'Match lines that start with "PASS: " and end with a dot ".". The entire string must start with PASS: and end with a dot.',
     hint: 'Combine `^PASS` at the start with `\\.$` at the end. Don\'t forget to escape the dot with `\\.` so it doesn\'t act as a wildcard! The pattern `^PASS: .*\\.$` matches strings starting with "PASS: " and ending with a period, with any content in between.',
     solution: '^PASS: .*\\.$',
     flags: '',

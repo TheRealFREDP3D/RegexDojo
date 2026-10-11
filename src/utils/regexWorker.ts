@@ -1,10 +1,12 @@
 import {
   createWorkerErrorMatchResult,
+  createTimeoutMatchResult,
   executeRegexMatch,
   REGEX_EXECUTION_LIMITS,
   validateRegexMatchJob,
   type RegexMatchBatchRequest,
-  type RegexMatchBatchResponse
+  type RegexMatchBatchResponse,
+  type ExecuteMatchResult
 } from './matcher';
 
 const workerScope = self as unknown as {
@@ -30,10 +32,18 @@ workerScope.onmessage = (event: MessageEvent<RegexMatchBatchRequest>) => {
     return;
   }
 
-  const results = jobs.map((job) => {
+  const deadline = performance.now() + REGEX_EXECUTION_LIMITS.timeoutMs;
+  const results: ExecuteMatchResult[] = [];
+
+  for (const job of jobs) {
+    if (performance.now() >= deadline) {
+      results.push(createTimeoutMatchResult(REGEX_EXECUTION_LIMITS.timeoutMs));
+      break;
+    }
+
     const validationError = validateRegexMatchJob(job);
-    return validationError || executeRegexMatch(job.pattern, job.flags, job.text, job.maxMatches);
-  });
+    results.push(validationError || executeRegexMatch(job.pattern, job.flags, job.text, job.maxMatches));
+  }
 
   workerScope.postMessage({ requestId, results } satisfies RegexMatchBatchResponse);
 };

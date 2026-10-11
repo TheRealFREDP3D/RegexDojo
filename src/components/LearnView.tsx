@@ -113,6 +113,10 @@ export const LearnView: React.FC<LearnViewProps> = ({
   // Handle user input change
   const handlePatternChange = (val: string) => {
     setUserPattern(val);
+    // Reset celebration if user modifies pattern after passing
+    if (hasCelebrated && val !== previousPattern) {
+      setHasCelebrated(false);
+    }
     // Increment attempts when user makes a meaningful change (not just backspacing to empty)
     if (val.length > 0 && val !== previousPattern) {
       setAttempts(prev => prev + 1);

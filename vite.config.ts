@@ -11,6 +11,9 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
+    // App is served from a subdirectory (https://therealfred.ca/regexdojo/),
+    // so all asset URLs must be prefixed with the base path.
+    base: '/regexdojo/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

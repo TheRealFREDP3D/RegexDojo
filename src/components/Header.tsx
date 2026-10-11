@@ -78,7 +78,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => onSelectMode('intro')}
             className="flex items-center gap-3 text-left group cursor-pointer focus:outline-none"
           >
-            <img src="/favicon/favicon-32x32.png" alt="RegexDojo" className="w-10 h-10 group-hover:scale-110 transition-transform" />
+            <img src="/regexdojo/favicon/favicon-32x32.png" alt="RegexDojo" className="w-10 h-10 group-hover:scale-110 transition-transform" />
             <span className="font-bold text-xl tracking-tight font-mono">Regex<span className="text-rose-500 text-glow-crimson">Dojo</span></span>
           </button>
         </div>

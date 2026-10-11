@@ -118,6 +118,19 @@ RegexDojo/
 └── vite.config.ts     # Vite configuration
 ```
 
+## Theme Sources
+
+The visual themes are inspired by and adapted from these sources:
+
+| Theme | Category | Source |
+|-------|----------|--------|
+| **Warm-Halo** | Custom Style | [Ember-Glazz](https://github.com/sasecurityn/Ember-Glazz) |
+| **Glacius** | Custom Style | [Aether-Core](https://github.com/cosmicseafox/Aether-Core) |
+| **Nord** | VSCode Classic | [Arctic Ice Studio](https://github.com/arcticicestudio/nord-vscode) |
+| **Dracula** | VSCode Classic | [Dracula Theme](https://draculatheme.com/) / [Zeno Rocha](https://github.com/zenorocha) |
+| **Abyss** | VSCode Classic | [VSCode Official Abyss](https://marketplace.visualstudio.com/items?itemName=mutantdino.abyss) |
+| **Tokyo Night** | VSCode Classic | [Tokyo Night](https://github.com/enkia/tokyo-night-vscode-theme) |
+
 ## License
 
 Apache License 2.0 - see [LICENSE](LICENSE) for details.

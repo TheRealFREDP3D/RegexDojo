@@ -40,6 +40,6 @@ jobs:
           external_repository: therealfredp3d/therealfredp3d.github.io
           publish_dir: ./dist
           destination_dir: regexdojo
-          branch: main
+          publish_branch: main
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
